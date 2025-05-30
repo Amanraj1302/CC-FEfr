@@ -17,3 +17,11 @@ export const formSchema = yup.object().shape({
   .oneOf([yup.ref('password'), null], 'Passwords must match')
   .required("Required"),
 });
+
+export const loginSchema = yup.object().shape({
+  email: yup.string().email("Please enter a valid email").required("Required"),
+  
+  password: yup
+  .string().min(5).matches(password,{message:"please enter a strong password"})
+  .required("Required"),
+});

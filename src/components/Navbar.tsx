@@ -1,19 +1,27 @@
 import React, { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { User } from 'lucide-react';
+
 
 export const Navbar: React.FC = () => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
-    const { pathname } = useLocation();
+  const { pathname } = useLocation();
 
   const showSignIn = pathname.split('/').at(-1) !== "signIn";
   const showSignUp = pathname.split('/').at(-1) !== "signUp";
+  const isAuthPage = ["/signIn", "/signUp", "/dashboard"].includes(pathname);
+
+
   const navigate = useNavigate();
 
   const handleSignInClick = () => {
     navigate('/signIn');
-  };
+
+  }
+
   const handlerSignUpClick = () => {
     navigate('/signUp')
+
   }
 
   return (
@@ -30,15 +38,18 @@ export const Navbar: React.FC = () => {
 
 
         <div className="hidden md:flex mr-14  space-x-4">
-          {showSignIn && (
-            <button className="px-4 py-2 bg-red-500 text-white rounded" onClick={handleSignInClick}>Sign in</button>
-          )}
-          {showSignUp &&
-            <button className="px-4 py-2 bg-red-500 text-white rounded" onClick={handlerSignUpClick}>Sign up</button>
-          }
+              {pathname.endsWith('/dashboard') ? (
+  <div className="text-gray-700">
+    <User size={28} className="cursor-pointer" />
+  </div>
+) : (
+  <>
+    <button className="px-4 py-2 bg-red-500 text-white rounded" onClick={handleSignInClick}>Sign in</button>
+    <button className="px-4 py-2 bg-red-500 text-white rounded" onClick={handlerSignUpClick}>Sign up</button>
+  </>
+)}
+
         </div>
-
-
         <button className="md:hidden" onClick={() => setIsOpen(!isOpen)} aria-label="Toggle mobile menu">
           <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
@@ -49,8 +60,6 @@ export const Navbar: React.FC = () => {
             />
           </svg>
         </button>
-
-
         {isOpen && (
           <div className="absolute top-full left-0 w-full bg-white shadow-md flex flex-col items-center space-y-4 py-4 md:hidden">
             <a href="#">Home</a>
@@ -62,5 +71,5 @@ export const Navbar: React.FC = () => {
         )}
       </nav>
     </div>
-  );
+  )
 };
