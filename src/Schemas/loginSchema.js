@@ -25,3 +25,15 @@ export const loginSchema = yup.object().shape({
   .string().min(5).matches(password,{message:"please enter a strong password"})
   .required("Required"),
 });
+
+
+
+export const otpSchema = yup.object().shape({
+  otp: yup.array()
+    .of(
+      yup.string()
+        .matches(/^[0-9]$/, 'Only digits are allowed')
+        .required('Required')
+    )
+    .length(6, 'OTP must be 6 digits'),
+});

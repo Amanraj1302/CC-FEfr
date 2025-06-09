@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useFormik } from 'formik';
-import { formSchema } from '../Schemas/index'
+import { formSchema } from '../Schemas/loginSchema'
 import Cookies from "js-cookie";
 
 import { error } from 'console';
@@ -71,7 +71,7 @@ export const SignUp: React.FC = () => {
         }else{
           toast.success("Sign Up Successful");
           action.resetForm();
-          setTimeout(() => navigate("/signIn"), 2000);
+          navigate(`/getotp/${values.email}`);
         }
         // navigate to the login page after successful registration
       } catch (error: any) {
@@ -120,8 +120,6 @@ export const SignUp: React.FC = () => {
             Submit
           </button>
         </form>
-
-        <ToastContainer position="top-center" autoClose={3000} theme="colored" />
       </div>
     </div>
   )

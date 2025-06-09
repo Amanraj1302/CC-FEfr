@@ -6,15 +6,15 @@ import { Footer } from '../components/Footer'
 import { Profiles } from '../components/Profiles'
 import { Info } from '../components/Info'
 
- export const Home:React.FC = () => {
-   
+export const Home: React.FC = () => {
+
   return (
     <div>
-             <Hero/>
-              <Profiles/>
-              <Projects/>
-              <Info/>
-              <Footer/>
+      <Hero />
+      <Profiles />
+      <Projects />
+      <Info />
+      
     </div>
   )
 }

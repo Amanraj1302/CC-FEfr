@@ -10,7 +10,6 @@ interface Casting {
   role: string;
 }
 
-
 const castings: Casting[]= [
   {
     title: "Amazon & Flipkart print shoot audition",

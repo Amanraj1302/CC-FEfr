@@ -4,16 +4,18 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { Home } from '../Pages/Home'
 import {GetOtp} from '../Pages/GetOtp'
 import { SignUp} from '../Pages/SignUp';
-import { Dashboard } from '../Pages/Dashboard';
+import  { Dashboard } from '../Pages/Dashboard';
+import { ProtectedRoutes } from "./ProtectedRoutes";
 export const Routers:React.FC= () => {
   return (
     
       <Routes>
         <Route path="/" element={<Home />} />
+        <Route path="/home" element={<Home />} />
         <Route path="/signIn" element={<SignIn  />} />
-        <Route path="/getotp" element={<GetOtp />} />
+        <Route path="/getotp/:email" element={<GetOtp />} />
         <Route path="/signUp" element={<SignUp/>} />
-        <Route path="/dashboard" element={<Dashboard/>} />
+        <Route path='/app/*' element={<ProtectedRoutes/>}></Route>
       </Routes>
     
   );

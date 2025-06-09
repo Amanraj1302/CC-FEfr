@@ -6,17 +6,19 @@ import { User } from 'lucide-react';
 export const Navbar: React.FC = () => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const { pathname } = useLocation();
+    console.log("🚀 ~ pathname:", pathname)
+    
+    const hideButtons = pathname.split("/").includes("getotp");
 
   const showSignIn = pathname.split('/').at(-1) !== "signIn";
   const showSignUp = pathname.split('/').at(-1) !== "signUp";
-  const isAuthPage = ["/signIn", "/signUp", "/dashboard"].includes(pathname);
+  // const isAuthPage = ["/signIn", "/signUp", "/dashboard"].includes(pathname);
 
-
+  
   const navigate = useNavigate();
 
   const handleSignInClick = () => {
     navigate('/signIn');
-
   }
 
   const handlerSignUpClick = () => {
@@ -25,29 +27,29 @@ export const Navbar: React.FC = () => {
   }
 
   return (
-    <div>
-      <nav className="flex justify-between items-center w-full p-2 bg-white shadow-md relative">
+    <div  >
+      <nav className="position-relative bg-white shadow-md w-full flex justify-between items-center p-2">
 
         <div className="text-2xl font-bold ml-14 pl-3">CastConnect</div>
 
         <ul className="hidden md:flex space-x-16 font-bold ml-24">
-          <li><a href="#">Home</a></li>
+          <li><a href="/home">Home</a></li>
           <li><a href="#">About us</a></li>
           <li><a href="#">Contact</a></li>
         </ul>
 
 
         <div className="hidden md:flex mr-14  space-x-4">
-              {pathname.endsWith('/dashboard') ? (
-  <div className="text-gray-700">
-    <User size={28} className="cursor-pointer" />
-  </div>
-) : (
-  <>
-    <button className="px-4 py-2 bg-red-500 text-white rounded" onClick={handleSignInClick}>Sign in</button>
-    <button className="px-4 py-2 bg-red-500 text-white rounded" onClick={handlerSignUpClick}>Sign up</button>
-  </>
-)}
+          {pathname.endsWith('/dashboard') ? (
+            <div className="text-gray-700">
+              <User size={28} className="cursor-pointer" />
+            </div>
+          ) : (
+           !hideButtons && <>
+              {showSignIn && <button className="px-4 py-2 bg-red-500 text-white rounded" onClick={handleSignInClick}>Sign in</button>}
+              {showSignUp && <button className="px-4 py-2 bg-red-500 text-white rounded" onClick={handlerSignUpClick}>Sign up</button>}
+            </>
+          )}
 
         </div>
         <button className="md:hidden" onClick={() => setIsOpen(!isOpen)} aria-label="Toggle mobile menu">
