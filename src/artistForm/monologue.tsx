@@ -2,6 +2,8 @@ import React from "react";
 import { useFormik } from "formik";
 import { monologueSchema } from "../Schemas/artistSchema";
 import { useNavigate, useParams } from "react-router-dom";
+import { toast } from "react-toastify";
+import { useAuth } from "../context/AuthContext";
 
 interface DialectFormValues {
     haryanvi: string;
@@ -13,7 +15,8 @@ interface DialectFormValues {
 
 
 export const DialectVideoForm: React.FC = () => {
-    const formik = useFormik<DialectFormValues>({
+    const{userEmail} = useAuth();
+    const { values, errors, touched, handleBlur, handleChange, handleSubmit } = useFormik<DialectFormValues>({
         initialValues: {
             haryanvi: "",
             rajasthani: "",
@@ -22,9 +25,29 @@ export const DialectVideoForm: React.FC = () => {
             maithili: "",
         },
         validationSchema: monologueSchema,
-        onSubmit: (values) => {
-            console.log("Submitted values:", values);
 
+        onSubmit: async (values) => {
+            try{
+            const res = await fetch("http://localhost:5000/api/artist/monologue", {
+              
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                credentials: "include",
+                body: JSON.stringify({...values,email:userEmail}),
+               } );
+                const data = await res.json();
+                if (res.ok) {
+                  toast.success("Monologue info submitted!");
+                  navigate("/home");
+                } else {
+                  toast.error(data.message || "Submission failed");
+                }
+            
+            }catch(err){
+              console.error("Submit error:", err);
+              toast.error("Something went wrong");
+            }
+            
         },
     });
 
@@ -32,9 +55,9 @@ export const DialectVideoForm: React.FC = () => {
     const step = useParams<{ step: string }>().step || "";
 
     return (
-        <div className="space-y-4 bg-white p-6 rounded-lg shadow">
+        <div className="space-y-10 max-w-4xl mx-auto mb-7 bg-white p-6 rounded-xl shadow">
 
-            <form onSubmit={formik.handleSubmit}>
+            <form onSubmit={handleSubmit}>
 
                 <h2 className="text-xl font-semibold text-gray-800">
                     Upload YouTube Links for Regional Dialects
@@ -55,16 +78,16 @@ export const DialectVideoForm: React.FC = () => {
                             type="url"
                             id={name}
                             name={name}
-                            onChange={formik.handleChange}
-                            onBlur={formik.handleBlur}
-                            value={formik.values[name as keyof DialectFormValues]}
+                            onChange={handleChange}
+                            onBlur={handleBlur}
+                            value={values[name as keyof DialectFormValues]}
                             className="mt-1 w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
                             placeholder="https://youtu.be/yourvideoreel"
                         />
-                        {formik.touched[name as keyof DialectFormValues] &&
-                            formik.errors[name as keyof DialectFormValues] && (
+                        {touched[name as keyof DialectFormValues] &&
+                            errors[name as keyof DialectFormValues] && (
                                 <div className="text-red-500 text-sm mt-1">
-                                    {formik.errors[name as keyof DialectFormValues]}
+                                    {errors[name as keyof DialectFormValues]}
                                 </div>
                             )}
                     </div>
@@ -125,7 +148,7 @@ export const DialectVideoForm: React.FC = () => {
                         className="px-4 py-2 border border-red-500 text-red-500 rounded hover:bg-red-50"
                     >
                         Back
-                    </button>
+                    </button>               
                     <div >
                         <button type="button" className="text-red-600 font-medium mr-4">Save Draft</button>
                         <button type="submit"

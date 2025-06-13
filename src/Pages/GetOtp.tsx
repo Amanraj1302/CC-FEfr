@@ -8,9 +8,6 @@ import { otpSchema } from '../Schemas/loginSchema';
 
 const otpFields = Array.from({ length: 6 });
 
-
-
-
 export const GetOtp: React.FC = () => {
   const { state } = useLocation();
   const navigate = useNavigate();
@@ -82,7 +79,7 @@ export const GetOtp: React.FC = () => {
     }
   };
 
-  // Show error UI if email is missing or invalid
+  
   if (!isValidEmail) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-white px-4">

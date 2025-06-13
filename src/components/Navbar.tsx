@@ -30,7 +30,8 @@ export const Navbar: React.FC = () => {
     <div  >
       <nav className="position-relative bg-white shadow-md w-full flex justify-between items-center p-2">
 
-        <div className="text-2xl font-bold ml-14 pl-3">CastConnect</div>
+        <div className="text-2xl font-bold ml-14 pl-3 cursor-pointer"
+        onClick={() => navigate('/home')} >CastConnect</div>
 
         <ul className="hidden md:flex space-x-16 font-bold ml-24">
           <li><a href="/home">Home</a></li>

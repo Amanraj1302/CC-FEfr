@@ -11,7 +11,7 @@ import { Footer } from './components/Footer';
 
 function App() {
   const { pathname } = useLocation();
-  const{isLoggedIn} = useAuth();
+  const {isLoggedIn} = useAuth();
   return (
     <>
       <Navbar />

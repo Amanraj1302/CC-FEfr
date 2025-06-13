@@ -33,7 +33,7 @@ export const SignIn: React.FC = () => {
 
   const navigate = useNavigate();
 
-  const {login}= useAuth();
+  const { login } = useAuth();
   const { values, handleBlur, errors, handleSubmit, touched, handleChange } = useFormik<FormValues>({
     initialValues: {
       email: "",
@@ -54,9 +54,9 @@ export const SignIn: React.FC = () => {
         } else {
           toast.success("Login successful");
           login(email);
-
           action.resetForm();
           navigate(`/home`);
+
         }
       } catch (error: any) {
         toast.error(error.message || "Something went wrong");

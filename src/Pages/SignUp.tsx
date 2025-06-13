@@ -4,9 +4,6 @@ import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useFormik } from 'formik';
 import { formSchema } from '../Schemas/loginSchema'
-import Cookies from "js-cookie";
-
-import { error } from 'console';
 
 type FormValues = {
   email: string;
@@ -40,15 +37,11 @@ const formFields = [
     placeholder: 'Confirm your password',
     type: 'password',
   },
-    
- 
-] as const;
 
+] as const;
 
 export const SignUp: React.FC = () => {
   const navigate = useNavigate();
-
-
   const { values, handleBlur, errors, handleSubmit, touched, handleChange } = useFormik<FormValues>({
     initialValues: {
       email: "",
@@ -68,12 +61,13 @@ export const SignUp: React.FC = () => {
         const data = await response.json();
         if (!response.ok) {
           toast.error(data.error || "Registration failed");
-        }else{
+        } else {
           toast.success("Sign Up Successful");
           action.resetForm();
           navigate(`/getotp/${values.email}`);
+
         }
-        // navigate to the login page after successful registration
+
       } catch (error: any) {
         toast.error(error.message || "Something went wrong");
         console.error(error);
@@ -84,9 +78,7 @@ export const SignUp: React.FC = () => {
 
   });
 
-
   return (
-
     <div className="min-h-screen flex items-center  justify-center bg-white px-4 ">
       <div className="w-full max-w-sm bg-white p-4 rounded shadow">
         <h2 className="text-2xl font-bold text-center mb-6">Sign Up</h2>

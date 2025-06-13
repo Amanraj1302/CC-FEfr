@@ -1,8 +1,9 @@
 import React from "react";
-import { Formik, Form, FieldArray } from "formik";
-import { professionalSchema } from "../Schemas/artistSchema";
-import { toast } from "react-toastify";
+import { Formik, FieldArray, ErrorMessage } from "formik";
 import { useNavigate, useParams } from "react-router-dom";
+import { toast } from "react-toastify";
+import { professionalSchema } from "../Schemas/artistSchema";
+import { useAuth } from "../context/AuthContext";
 
 type ProfessionalFormValues = {
   talentCategory: string;
@@ -18,169 +19,176 @@ type ProfessionalFormValues = {
   }[];
 };
 
-const skillOptions = [
-  "Horse Riding", "Swimming", "Scating", "Driving",
-  "Dance", "Music", "Singing", "Martial Arts"
-];
+const skillOptions = ["Horse Riding", "Swimming", "Scating", "Driving", "Dance", "Music", "Singing", "Martial Arts"];
 
-const professionalFields = [
-  { id: "talentCategory", label: "Talent Category", placeholder: "Enter category" },
-  { id: "height", label: "Height", placeholder: "Enter your height" },
-  { id: "age", label: "Age", placeholder: "Enter your age" },
-  { id: "screenAge", label: "Screen Age", placeholder: "Enter your screen age" },
-  { id: "videoReel", label: "Video Reel (YouTube only)", placeholder: "youtube.com/yourvideoreel" },
+const fields = [
+  { id: "talentCategory", label: "Talent Category", placeholder: "Enter category", type: "text" },
+  { id: "height", label: "Height", placeholder: "Enter your height", type: "text" },
+  { id: "age", label: "Age", placeholder: "Enter your age", type: "number" },
+  { id: "screenAge", label: "Screen Age", placeholder: "Enter your screen age", type: "number" },
+  { id: "videoReel", label: "Video Reel (YouTube only)", placeholder: "youtube.com/yourvideoreel", type: "text" },
 ] as const;
 
+export const Professional: React.FC = () => {
+  const navigate = useNavigate();
+  const step = useParams<{ step: string }>().step || "";
+  const { userEmail } = useAuth();
 
-export const Professional: React.FC= () => {
-   const navigate = useNavigate();
-   const step = useParams<{ step: string }>().step || "";
+  const _handleSubmit = async (values: any) => {
+    console.log("🚀 ~ const_handleSubmit= ~ values:", values)
+    try {
+      const res = await fetch("http://localhost:5000/api/artist/professional", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ ...values, email: userEmail}),
+      });
+
+      const data = await res.json();
+      if (res.ok) {
+        toast.success("Professional info submitted!");
+        navigate(`/app/dashboard/${+step + 1}`);
+      } else {
+        toast.error(data.message || "Submission failed");
+      }
+    } catch (err) {
+      console.error("Submit error:", err);
+      toast.error("Something went wrong");
+
+    }
+  }
+
+
   return (
-    <Formik<ProfessionalFormValues>
-      initialValues={{
-        talentCategory: "",
-        height: "",
-        age: "",
-        screenAge: "",
-        videoReel: "",
-        skills: [],
-        pastProjects: [
-          { projectName: "", role: "", workLink: "" },
-          { projectName: "", role: "", workLink: "" },
-          { projectName: "", role: "", workLink: "" }
-        ]
-      }}
-      validationSchema={professionalSchema}
-      onSubmit={(values) => {
-        console.log("Professional Data", values);
-        toast.success("Professional info saved!");
-        //onNext();
-      }}
-    >
-      {({ values, handleChange, handleBlur, touched, errors }) => (
-        <Form className="max-w-5xl mx-auto px-6 py-10 bg-white rounded-xl shadow space-y-6">
+    <>
 
-          {/* Basic Fields */}
-          <div className="grid md:grid-cols-3 gap-6">
-            {professionalFields.map(({ id, label, placeholder }) => (
-              <div key={id}>
-                <label htmlFor={id} className="block font-medium mb-1">{label}</label>
-                <input
-                  id={id}
-                  name={id}
-                  type="text"
-                  value={values[id]}
-                  onChange={handleChange}
-                  onBlur={handleBlur}
-                  placeholder={placeholder}
-                  className="w-full border border-gray-300 p-2 rounded"
-                />
-                {touched[id] && errors[id] && (
-                  <p className="text-red-500 text-sm mt-1">{errors[id] as string}</p>
-                )}
-              </div>
-            ))}
-          </div>
-
-          {/* Skills Section */}
-          <div>
-            <label className="block font-medium mb-2">Skills</label>
-            <div className="flex flex-wrap gap-4">
-              {skillOptions.map((skill) => (
-                <label
-                  key={skill}
-                  className="flex items-center gap-2 border px-3 py-1 rounded cursor-pointer"
-                >
+      <Formik<ProfessionalFormValues>
+        initialValues={{
+          talentCategory: "",
+          height: "",
+          age: "",
+          screenAge: "",
+          videoReel: "",
+          skills: [],
+          pastProjects: [{ projectName: "", role: "", workLink: "" }],
+        }}
+        validationSchema={professionalSchema}
+        onSubmit={_handleSubmit}
+      >
+        {({ values, handleChange, handleBlur, handleSubmit, touched, errors }) => {
+          return <form onSubmit={handleSubmit} className="max-w-5xl mx-auto px-6 py-10 bg-white rounded-xl shadow space-y-6 mb-7">
+            <div className="grid md:grid-cols-3 gap-6">
+              {fields.map(({ id, label, placeholder, type }) => (
+                <div key={id}>
+                  <label htmlFor={id} className="block font-medium mb-1">{label}</label>
                   <input
-                    type="checkbox"
-                    name="skills"
-                    value={skill}
-                    checked={values.skills.includes(skill)}
+                    id={id}
+                    name={id}
+                    type={type}
+                    value={values[id as keyof ProfessionalFormValues] as string}
                     onChange={handleChange}
+                    onBlur={handleBlur}
+                    placeholder={placeholder}
+                    className="w-full border border-gray-300 p-2 rounded"
                   />
-                  {skill}
-                </label>
+                  {touched[id as keyof typeof touched] && errors[id as keyof typeof errors] && (
+                    <p className="text-red-500 text-sm mt-1">{errors[id as keyof typeof errors] as string}</p>
+                  )}
+                </div>
               ))}
             </div>
-            {touched.skills && errors.skills && (
-              <p className="text-red-500 text-sm mt-1">{errors.skills as string}</p>
-            )}
-          </div>
 
-          {/* Past Projects Section */}
-          <FieldArray name="pastProjects">
-            {({ push }) => (
-              <div>
-                <h3 className="text-lg font-semibold mb-4">Past Projects</h3>
-                {values.pastProjects.map((project, index) => (
-                  <div key={index} className="grid md:grid-cols-3 gap-4 mb-4">
-                    {["projectName", "role", "workLink"].map((field) => {
-                      const fieldName = `pastProjects[${index}].${field}`;
-                      const placeholders: Record<string, string> = {
-                        projectName: "Enter project name",
-                        role: "Enter your role",
-                        workLink: "youtube.com/project-video"
-                      };
-                      const labels: Record<string, string> = {
-                        projectName: "Project Name",
-                        role: "Role",
-                        workLink: "Work Link"
-                      };
+            <div>
+              <label className="block font-medium mb-2">Skills</label>
+              <div className="flex flex-wrap gap-4">
+                {skillOptions.map((skill) => (
+                  <label key={skill} className="flex items-center gap-2 border px-3 py-1 rounded cursor-pointer">
+                    <input
+                      type="checkbox"
+                      name="skills"
+                      value={skill}
+                      checked={values.skills.includes(skill)}
+                      onChange={handleChange}
+                    />
+                    {skill}
+                  </label>
+                ))}
+              </div>
+              {touched.skills && errors.skills && <p className="text-red-500 text-sm mt-1">{errors.skills as string}</p>}
+            </div>
 
-                      return (
+            <FieldArray name="pastProjects">
+              {({ push, remove }) => (
+                <div>
+                  <h3 className="text-lg font-semibold mb-4">Past Projects</h3>
+                  {values.pastProjects.map((proj, i) => (
+                    <div
+                      key={i}
+                      className="grid md:grid-cols-3 gap-4 mb-6 border p-4 rounded-md relative"
+                    >
+                      {["projectName", "role", "workLink"].map((field) => (
                         <div key={field}>
-                          <label htmlFor={fieldName} className="block font-medium mb-1">
-                            {labels[field]}
+                          <label className="block font-medium mb-1">
+                            {field.replace(/([A-Z])/g, " $1")}
                           </label>
                           <input
-                            name={fieldName}
-                            value={project[field as keyof typeof project]}
+                            name={`pastProjects[${i}].${field}`}
+                            value={proj[field as keyof typeof proj]}
                             onChange={handleChange}
                             className="w-full border border-gray-300 p-2 rounded"
-                            placeholder={placeholders[field]}
+                            placeholder={`Enter ${field}`}
                           />
-                          {Array.isArray(errors.pastProjects) &&
-                            (errors.pastProjects[index] as { [key: string]: string } | undefined)?.[field] && (
-                              <p className="text-red-500 text-sm mt-1">
-                                {(errors.pastProjects[index] as { [key: string]: string })[field]}
-                              </p>
-                          )}
+                          <ErrorMessage
+                            name={`pastProjects[${i}].${field}`}
+                            component="p"
+                            className="text-sm text-red-500 mt-1"
+                          />
                         </div>
-                      );
-                    })}
-                  </div>
-                ))}
-                <button
-                  type="button"
-                  onClick={() => push({ projectName: "", role: "", workLink: "" })}
-                  className="text-red-500 mt-2"
-                >
-                  + Add more projects
-                </button>
-              </div>
-            )}
-          </FieldArray>
+                      ))}
 
-          {/* Footer Buttons */}
-          <div className="flex justify-between mt-6">
-            <button
-              type="button"
-              onClick={()=>{ navigate(`/app/dashboard/${+step - 1}`) }}
-              className="px-4 py-2 border border-red-500 text-red-500 rounded hover:bg-red-50"
-            >
-              Back
-            </button>
-            <div>
-              <button type="button" className="text-red-600 font-medium mr-4">Save Draft</button>
-              <button onClick={ ()=> { navigate(`/app/dashboard/${+step+ 1}`) } }
-                className="bg-red-600 text-white px-6 py-2 rounded hover:bg-red-700"
-              >
-                Next
+                      {/* Remove Button */}
+                      {values.pastProjects.length > 1 && (
+                        <button
+                          type="button"
+                          onClick={() => remove(i)}
+                          className="absolute top-2 right-2 text-sm text-red-600 hover:underline"
+                        >
+                          Remove
+                        </button>
+                      )}
+                    </div>
+                  ))}
+
+                  {/* Add More Button */}
+                  <button
+                    type="button"
+                    onClick={() => push({ projectName: "", role: "", workLink: "" })}
+                    className="text-red-500 mt-2"
+                  >
+                    + Add More Projects
+                  </button>
+                </div>
+              )}
+            </FieldArray>
+
+
+            <div className="flex justify-between  mt-6">
+              <button type="button" onClick={() => { navigate(`/app/dashboard/${+step - 1}`) }} className="text-red-600">
+                Back
               </button>
+              <div>
+                <button type="button" className="text-red-600 font-medium mr-4">Save Draft</button>
+                <button type="submit" className="bg-red-600 text-white px-6 py-2 rounded hover:bg-red-700">
+                  Next
+                </button>
+
+              </div>
             </div>
-          </div>
-        </Form>
-      )}
-    </Formik>
+            
+          </form>
+        }}
+      </Formik>
+    </>
+
   );
 };

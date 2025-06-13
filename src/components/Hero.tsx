@@ -1,8 +1,9 @@
 import React from 'react';
 import imgUrl from '../assets/img.jpg';
+import { useNavigate } from 'react-router-dom';
 
 export const Hero: React.FC = () => {
- 
+ const navigate = useNavigate();
     return (
     <div
       className="w-full h-screen bg-cover bg-center relative flex items-center justify-start "
@@ -19,7 +20,9 @@ export const Hero: React.FC = () => {
           Build your profile, find your next role, or discover <br />
           the perfect talent for your production
         </p>
-        <button className="bg-gradient-to-r from-yellow-400 to-red-500 text-white font-semibold py-2 px-6 rounded hover:opacity-90 transition">
+        <button  onClick={() => {
+              navigate("/app/dashboard/0");
+            }}className="bg-gradient-to-r from-yellow-400 to-red-500 text-white font-semibold py-2 px-6 rounded hover:opacity-90 transition">
           Create Your Profile
         </button>
       </div>

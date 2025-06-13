@@ -2,7 +2,6 @@ import React, { use } from "react";
 import aaa from "../assets/aaa.jpg";
 import bbb from '../assets/bbb.jpg';
 import ccc from '../assets/ccc.jpg';
-import { useNavigate } from "react-router-dom";
 
 interface Profile {
   name: string;
@@ -10,7 +9,6 @@ interface Profile {
   tags: string[];
   img: string;    
 }
-
 
 const profiles: Profile[] = [
   {
@@ -65,7 +63,7 @@ const profiles: Profile[] = [
 ];
 
 export const Profiles : React.FC =() => {
-   const navigate = useNavigate();
+   
   return (
     <section className="px-10 py-12 bg-gray-50">
       <div className="flex justify-between items-center mb-6">
@@ -94,9 +92,7 @@ export const Profiles : React.FC =() => {
           ))}
         </div>
 
-            <button className="mt-4 border border-red-500 text-red-500 px-3 py-1 rounded" onClick={() => {
-              navigate("/app/dashboard/0");
-            }}>
+            <button className="mt-4 border border-red-500 text-red-500 px-3 py-1 rounded" >
               View profile
             </button>
           </div>
