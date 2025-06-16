@@ -14,14 +14,8 @@ export const GetOtp: React.FC = () => {
   const { login } = useAuth();
 
   const { email } = useParams();
-  console.log("🚀 ~ email:", email)
-
-  // const query = new URLSearchParams(useLocation().search);
-  // console.log("🚀 ~ query:", query)
-  // const email = query.get('email');
-
+  
   const [isValidEmail, setIsValidEmail] = useState(true);
-
 
   const verifyOtp = async (email: string, otp: string) => {
 

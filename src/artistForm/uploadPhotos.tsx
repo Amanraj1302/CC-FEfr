@@ -2,9 +2,11 @@ import React from "react";
 import { Formik } from "formik";
 import { toast } from "react-toastify";
 import { useNavigate, useParams } from "react-router-dom";
-import upload from '../assets/upload.png';
+import upload from "../assets/upload.png";
 import { uploadPhotosSchema } from "../Schemas/artistSchema";
 import { useAuth } from "../context/AuthContext";
+import { saveFormData, getFormData } from "../utils/localStorageHelper";
+
 type UploadSection = {
   id: string;
   title: string;
@@ -51,68 +53,153 @@ const uploadSections: UploadSection[] = [
   },
 ];
 
-type uploadFormValues = {
+type UploadFormValues = {
   [key: string]: File | null;
 };
 
-export const UploadPhotos: React.FC = () => {
-const initialValues: uploadFormValues = uploadSections.reduce(
-    (acc, section) => ({ ...acc, [section.id]: null }),
-    {}
-  );
-  function onBack(event: React.MouseEvent<HTMLButtonElement>): void {
-    throw new Error("Function not implemented.");
+const getPreviewURL = (val: unknown): string => {
+  if (val instanceof File) {
+    return URL.createObjectURL(val);
   }
-  const step = useParams<{ step: string }>().step || "";
-  const {userEmail}= useAuth();
-  const navigate = useNavigate();
- const _handleSubmit = async (values: any) => {
-  const formData = new FormData();
+  if (typeof val === "string" && val.startsWith("data:image")) {
+    return val;
+  }
+  return upload;
+};
 
-  // Include the email field
-  formData.append("email", userEmail);
+const base64ToFile = (base64: string, filename: string): File => {
+  const arr = base64.split(",");
+  const mime = arr[0].match(/:(.*?);/)?.[1] || "";
+  const bstr = atob(arr[1]);
+  let n = bstr.length;
+  const u8arr = new Uint8Array(n);
+  while (n--) u8arr[n] = bstr.charCodeAt(n);
+  return new File([u8arr], filename, { type: mime });
+};
 
-  // Add each file if present
-  Object.entries(values).forEach(([key, file]) => {
-    if (file) {
-      formData.append(key, file as File);
+export const UploadPhotos: React.FC = () => {
+  const storedData = getFormData();
+
+  const initialValues: UploadFormValues = uploadSections.reduce((acc, section) => {
+    const base64 = storedData?.[section.id];
+    if (base64?.startsWith("data:image")) {
+      acc[section.id] = base64ToFile(base64, `${section.id}.jpg`);
+    } else {
+      acc[section.id] = null;
     }
-  });
+    return acc;
+  }, {} as UploadFormValues);
 
-  try {
-    const res = await fetch("http://localhost:5000/api/artist/upload", {
-      method: "PUT",
-      body: formData, 
-      credentials: "include",
+  const { userEmail } = useAuth();
+  const navigate = useNavigate();
+  const step = useParams<{ step: string }>().step || "1";
+
+  const extractUploadData = (data: UploadFormValues) => {
+    const cleaned: UploadFormValues = {};
+    uploadSections.forEach(({ id }) => {
+      cleaned[id] = data[id] || null;
+    });
+    return cleaned;
+  };
+
+  const _handleSubmit = async (values: UploadFormValues) => {
+    const cleanedValues = extractUploadData(values);
+    const formData = new FormData();
+    formData.append("email", userEmail);
+
+    Object.entries(cleanedValues).forEach(([key, value]) => {
+      if (value instanceof File) {
+        formData.append(key, value);
+      }
     });
 
-    const data = await res.json();
+    try {
+      const res = await fetch(
+        `http://localhost:5000/api/artist/upload?email=${userEmail}`,
+        {
+          method: "PUT",
+          body: formData,
+          credentials: "include",
+        }
+      );
 
-    if (res.ok) {
-      toast.success("Photos submitted!");
-      navigate(`/app/dashboard/${+step + 1}`);
-    } else {
-      toast.error(data.message || "Upload failed");
+      const data = await res.json();
+      if (res.ok) {
+        toast.success("Photos submitted!");
+        navigate(`/app/dashboard/${+step + 1}`);
+      } else {
+        toast.error(data.message || "Upload failed");
+      }
+    } catch (err) {
+      console.error("Submit error:", err);
+      toast.error("Something went wrong");
     }
-  } catch (err) {
-    console.error("Submit error:", err);
-    toast.error("Something went wrong");
-  }
+  };
+
+  const handleFileChange = (
+    e: React.ChangeEvent<HTMLInputElement>,
+    id: string,
+    values: UploadFormValues,
+    setFieldValue: (field: string, value: any) => void
+  ) => {
+    const file = e.currentTarget.files?.[0];
+    if (!file) return;
+
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error("File is too large. Max size is 5MB.");
+      return;
+    }
+
+    setFieldValue(id, file); // Save File in Formik state
+
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      const base64 = reader.result as string;
+      const currentStored = getFormData();
+      saveFormData({ ...currentStored, [id]: base64 }); // Save base64 only to localStorage
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const handleDraftSave = (values: UploadFormValues) => {
+  const currentStored = getFormData();
+  const updatedData = { ...currentStored };
+
+  const readPromises = Object.entries(values).map(([key, val]) => {
+    return new Promise<void>((resolve) => {
+      if (val instanceof File) {
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          const base64 = reader.result as string;
+          updatedData[key] = base64;
+          resolve();
+        };
+        reader.readAsDataURL(val);
+      } else {
+        resolve(); // skip if no file
+      }
+    });
+  });
+
+  Promise.all(readPromises).then(() => {
+    saveFormData(updatedData);
+    toast.success("Draft saved!");
+  });
 };
 
   return (
-    
     <Formik
       initialValues={initialValues}
       validationSchema={uploadPhotosSchema}
       onSubmit={_handleSubmit}
     >
       {({ setFieldValue, handleSubmit, values, errors, touched }) => (
-        <form onSubmit={handleSubmit} className="space-y-10 max-w-4xl mx-auto mb-7 bg-white p-6 rounded-xl shadow">
+        <form
+          onSubmit={handleSubmit}
+          className="space-y-10 max-w-4xl mx-auto mb-7 bg-white p-6 rounded-xl shadow"
+        >
           <h2 className="text-2xl font-bold">Upload Photos</h2>
-          <p className="text-gray-600">
-            (Read the guidelines before uploading)
-          </p>
+          <p className="text-gray-600">(Read the guidelines before uploading)</p>
 
           {uploadSections.map(({ id, title, description, optional }) => (
             <div key={id} className="space-y-4 border-b pb-6">
@@ -122,11 +209,7 @@ const initialValues: uploadFormValues = uploadSections.reduce(
                 <label htmlFor={id} className="cursor-pointer relative group">
                   <div className="w-24 h-24 rounded overflow-hidden border border-gray-300 group-hover:ring-2 group-hover:ring-red-500">
                     <img
-                      src={
-                        values[id]
-                          ? URL.createObjectURL(values[id] as File)
-                          : upload
-                      }
+                      src={getPreviewURL(values[id])}
                       alt="Upload"
                       className="w-full h-full object-cover"
                     />
@@ -137,7 +220,7 @@ const initialValues: uploadFormValues = uploadSections.reduce(
                     type="file"
                     accept="image/*"
                     onChange={(e) =>
-                      setFieldValue(id, e.currentTarget.files?.[0] || null)
+                      handleFileChange(e, id, values, setFieldValue)
                     }
                     className="hidden"
                   />
@@ -145,29 +228,39 @@ const initialValues: uploadFormValues = uploadSections.reduce(
 
                 <div>
                   <p className="text-xs text-gray-500 mt-1">
-                    Maximum photo upload size is 5 MB. {optional && "(Optional)"}
+                    Max photo size is 5MB. {optional && "(Optional)"}
                   </p>
-                  {values[id] && (
-                    <p className="text-green-500 text-sm mt-1">
-                      Selected: {values[id]?.name}
-                    </p>
+                  {values[id] instanceof File && (
+                    <p className="text-green-500 text-sm mt-1">Image selected</p>
                   )}
                   {errors[id] && touched[id] && (
                     <p className="text-sm text-red-500 mt-1">{errors[id] as string}</p>
                   )}
                 </div>
               </div>
-
             </div>
           ))}
 
           <div className="flex justify-between mt-6">
-            <button type="button" onClick={() => { navigate(`/app/dashboard/${+step - 1}`) }} className="px-4 py-2 border border-red-500 text-red-500 rounded">
+            <button
+              type="button"
+              onClick={() => navigate(`/app/dashboard/${+step - 1}`)}
+              className="px-4 py-2 border border-red-500 text-red-500 rounded"
+            >
               Back
             </button>
             <div>
-              <button type="button" className="text-red-600 font-medium mr-4">Save Draft</button>
-              <button type="submit" className="bg-red-600 text-white px-6 py-2 rounded hover:bg-red-700">
+              <button
+                type="button"
+                onClick={() => handleDraftSave(values)}
+                className="text-red-600 font-medium mr-4 underline"
+              >
+                Save Draft
+              </button>
+              <button
+                type="submit"
+                className="bg-red-600 text-white px-6 py-2 rounded hover:bg-red-700"
+              >
                 Next
               </button>
             </div>
@@ -175,6 +268,6 @@ const initialValues: uploadFormValues = uploadSections.reduce(
         </form>
       )}
     </Formik>
-    
   );
 };
+

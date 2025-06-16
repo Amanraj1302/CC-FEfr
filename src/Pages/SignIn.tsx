@@ -55,7 +55,7 @@ export const SignIn: React.FC = () => {
           toast.success("Login successful");
           login(email);
           action.resetForm();
-          navigate(`/home`);
+          navigate(`/app/dashboard/0`);
 
         }
       } catch (error: any) {

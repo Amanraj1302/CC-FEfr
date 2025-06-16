@@ -3,18 +3,16 @@ import React, { createContext, useState, useContext, ReactNode } from 'react';
 
 interface AuthContextType {
   isLoggedIn: boolean;
- 
   userEmail: string;
-  login: ( email: string) => void;
+  login: (email: string) => void;
   logout: () => void;
 }
 
 const defaultAuthContext: AuthContextType = {
   isLoggedIn: false,
-  
   userEmail: '',
-  login: () => {},
-  logout: () => {},
+  login: () => { },
+  logout: () => { },
 };
 
 const AuthContext = createContext<AuthContextType>(defaultAuthContext);
@@ -29,7 +27,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     userEmail: '',
   });
 
-  const login = ( email: string): void => {
+  const login = (email: string): void => {
     setAuth({
       isLoggedIn: true,
       userEmail: email,

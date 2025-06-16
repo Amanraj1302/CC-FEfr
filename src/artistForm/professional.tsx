@@ -4,6 +4,8 @@ import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import { professionalSchema } from "../Schemas/artistSchema";
 import { useAuth } from "../context/AuthContext";
+import { saveFormData, getFormData } from '../utils/localStorageHelper';
+
 
 type ProfessionalFormValues = {
   talentCategory: string;
@@ -29,24 +31,36 @@ const fields = [
   { id: "videoReel", label: "Video Reel (YouTube only)", placeholder: "youtube.com/yourvideoreel", type: "text" },
 ] as const;
 
+
 export const Professional: React.FC = () => {
   const navigate = useNavigate();
   const step = useParams<{ step: string }>().step || "";
   const { userEmail } = useAuth();
+  const extractProfessionalData = (data: any): ProfessionalFormValues => ({
+  talentCategory: data.talentCategory,
+  height: data.height,
+  age: data.age,
+  screenAge: data.screenAge,
+  videoReel: data.videoReel,
+  skills: data.skills,
+  pastProjects: data.pastProjects,
+});
 
   const _handleSubmit = async (values: any) => {
-    console.log("🚀 ~ const_handleSubmit= ~ values:", values)
+     const cleanedValues = extractProfessionalData(values);
+    
     try {
       const res = await fetch("http://localhost:5000/api/artist/professional", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
-        body: JSON.stringify({ ...values, email: userEmail}),
+        body: JSON.stringify({ ...cleanedValues, email: userEmail}),
       });
 
       const data = await res.json();
       if (res.ok) {
         toast.success("Professional info submitted!");
+        
         navigate(`/app/dashboard/${+step + 1}`);
       } else {
         toast.error(data.message || "Submission failed");
@@ -57,6 +71,10 @@ export const Professional: React.FC = () => {
 
     }
   }
+  const draftHnadler = (values: ProfessionalFormValues) => {
+    saveFormData(values);
+    toast.success("Draft saved!");
+  }
 
 
   return (
@@ -64,13 +82,15 @@ export const Professional: React.FC = () => {
 
       <Formik<ProfessionalFormValues>
         initialValues={{
-          talentCategory: "",
+         ... {talentCategory: "",
           height: "",
           age: "",
           screenAge: "",
           videoReel: "",
           skills: [],
           pastProjects: [{ projectName: "", role: "", workLink: "" }],
+          },
+          ...getFormData(),
         }}
         validationSchema={professionalSchema}
         onSubmit={_handleSubmit}
@@ -173,11 +193,11 @@ export const Professional: React.FC = () => {
 
 
             <div className="flex justify-between  mt-6">
-              <button type="button" onClick={() => { navigate(`/app/dashboard/${+step - 1}`) }} className="text-red-600">
+              <button type="button" onClick={() => { navigate(`/app/dashboard/${+step - 1}`) }} className="bg-red-600 text-white px-6 py-2 rounded hover:bg-red-700">
                 Back
               </button>
               <div>
-                <button type="button" className="text-red-600 font-medium mr-4">Save Draft</button>
+                <button type="button" onClick={() => draftHnadler(values)} className="text-red-600 font-medium mr-4 underline">Save Draft</button>
                 <button type="submit" className="bg-red-600 text-white px-6 py-2 rounded hover:bg-red-700">
                   Next
                 </button>

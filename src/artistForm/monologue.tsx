@@ -4,6 +4,7 @@ import { monologueSchema } from "../Schemas/artistSchema";
 import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import { useAuth } from "../context/AuthContext";
+import { getFormData, clearFormData, saveFormData } from "../utils/localStorageHelper";
 
 interface DialectFormValues {
     haryanvi: string;
@@ -15,41 +16,67 @@ interface DialectFormValues {
 
 
 export const DialectVideoForm: React.FC = () => {
-    const{userEmail} = useAuth();
+    const { userEmail } = useAuth();
+
+    const extractMonologueData = (data: any): DialectFormValues => ({
+        haryanvi: data.haryanvi,
+        rajasthani: data.rajasthani,
+        bhojpuri: data.bhojpuri,
+        awadhi: data.awadhi,
+        maithili: data.maithili,
+    });
+
+    //default values
+    const defaultValues: DialectFormValues = {
+        haryanvi: "",
+        rajasthani: "",
+        bhojpuri: "",
+        awadhi: "",
+        maithili: "",
+    }
+    const savedValues = getFormData();
+    const initialValues = { ...defaultValues, ...savedValues };
     const { values, errors, touched, handleBlur, handleChange, handleSubmit } = useFormik<DialectFormValues>({
         initialValues: {
             haryanvi: "",
             rajasthani: "",
             bhojpuri: "",
             awadhi: "",
-            maithili: "",
+            maithili: "", ...getFormData()
         },
         validationSchema: monologueSchema,
 
         onSubmit: async (values) => {
-            try{
-            const res = await fetch("http://localhost:5000/api/artist/monologue", {
-              
-                method: "PUT",
-                headers: { "Content-Type": "application/json" },
-                credentials: "include",
-                body: JSON.stringify({...values,email:userEmail}),
-               } );
+            const cleanedData = extractMonologueData(values);
+            try {
+                const res = await fetch("http://localhost:5000/api/artist/monologue", {
+
+                    method: "PUT",
+                    headers: { "Content-Type": "application/json" },
+                    credentials: "include",
+                    body: JSON.stringify({ ...cleanedData, email: userEmail }),
+                });
                 const data = await res.json();
                 if (res.ok) {
-                  toast.success("Monologue info submitted!");
-                  navigate("/home");
+                    toast.success("Monologue info submitted!");
+                   clearFormData();
+                    navigate("/home");
                 } else {
-                  toast.error(data.message || "Submission failed");
+                    toast.error(data.message || "Submission failed");
                 }
-            
-            }catch(err){
-              console.error("Submit error:", err);
-              toast.error("Something went wrong");
+
+            } catch (err) {
+                console.error("Submit error:", err);
+                toast.error("Something went wrong");
             }
-            
+
         },
     });
+    const handleDraft = () => {
+        const cleanedData = extractMonologueData(values);
+        saveFormData(values);
+        toast.success("Draft saved!");
+    }
 
     const navigate = useNavigate();
     const step = useParams<{ step: string }>().step || "";
@@ -142,15 +169,16 @@ export const DialectVideoForm: React.FC = () => {
                     </p>
                 </div>
                 <div className="flex justify-between mt-6">
-                    <button
-                        onClick={() => navigate(`/app/dashboard/${+step -1}`)}
+                    <button type="button"
+                        onClick={() => navigate(`/app/dashboard/${+step - 1}`)}
 
                         className="px-4 py-2 border border-red-500 text-red-500 rounded hover:bg-red-50"
                     >
                         Back
-                    </button>               
+                    </button>
                     <div >
-                        <button type="button" className="text-red-600 font-medium mr-4">Save Draft</button>
+                        <button type="button" onClick={handleDraft} className="text-red-600 font-medium mr-4 underline">Save Draft</button>
+                       
                         <button type="submit"
                             className="bg-red-600 text-white px-6 py-2 rounded hover:bg-red-700"
                         >

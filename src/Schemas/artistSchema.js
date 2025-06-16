@@ -55,7 +55,7 @@ export const professionalSchema = Yup.object().shape({
 });
 
 
-const FILE_SIZE = 5 * 1024 * 1024; // 5MB
+const FILE_SIZE = 5* 1024 * 1024; // 5MB
 const SUPPORTED_FORMATS = ["image/jpg", "image/jpeg", "image/png", "image/webp"];
 
 const fileValidation = Yup.mixed()

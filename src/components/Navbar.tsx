@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { User } from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
 
 
 export const Navbar: React.FC = () => {
@@ -12,6 +13,8 @@ export const Navbar: React.FC = () => {
 
   const showSignIn = pathname.split('/').at(-1) !== "signIn";
   const showSignUp = pathname.split('/').at(-1) !== "signUp";
+  const {isLoggedIn}=useAuth();
+  console.log("🚀 ~ isLoggedIn:", isLoggedIn)
   // const isAuthPage = ["/signIn", "/signUp", "/dashboard"].includes(pathname);
 
   
@@ -27,8 +30,8 @@ export const Navbar: React.FC = () => {
   }
 
   return (
-    <div  >
-      <nav className="position-relative bg-white shadow-md w-full flex justify-between items-center p-2">
+    <div  className='relative' >
+      <nav className="fixed z-10 bg-white shadow-md w-full flex justify-between items-center p-2">
 
         <div className="text-2xl font-bold ml-14 pl-3 cursor-pointer"
         onClick={() => navigate('/home')} >CastConnect</div>
@@ -41,12 +44,13 @@ export const Navbar: React.FC = () => {
 
 
         <div className="hidden md:flex mr-14  space-x-4">
-          {pathname.endsWith('/dashboard') ? (
+          { isLoggedIn ? (
             <div className="text-gray-700">
               <User size={28} className="cursor-pointer" />
             </div>
           ) : (
-           !hideButtons && <>
+           
+           <>
               {showSignIn && <button className="px-4 py-2 bg-red-500 text-white rounded" onClick={handleSignInClick}>Sign in</button>}
               {showSignUp && <button className="px-4 py-2 bg-red-500 text-white rounded" onClick={handlerSignUpClick}>Sign up</button>}
             </>
@@ -64,15 +68,22 @@ export const Navbar: React.FC = () => {
           </svg>
         </button>
         {isOpen && (
-          <div className="absolute top-full left-0 w-full bg-white shadow-md flex flex-col items-center space-y-4 py-4 md:hidden">
-            <a href="#">Home</a>
+          <div className="absolute top-10 z-10 left-0 w-full bg-white shadow-md flex flex-col items-center space-y-4 py-4 md:hidden">
+            <a href="/home">Home</a>
             <a href="#">About us</a>
             <a href="#">Contact</a>
-            <button className="w-4/5 px-4 py-2 bg-red-500 text-white rounded">Sign in</button>
-            <button className="w-4/5 px-4 py-2 bg-red-500 text-white rounded">Sign up</button>
+            <button  onClick={() => {navigate('/signIn');setIsOpen(false)}} className="w-4/5 px-4 py-2 bg-red-500 text-white rounded">Sign in</button>
+            <button onClick={() => {navigate('/signUp');setIsOpen(false)}} className="w-4/5 px-4 py-2 bg-red-500 text-white rounded">Sign up</button>
           </div>
         )}
       </nav>
     </div>
   )
 };
+
+
+
+
+
+
+
