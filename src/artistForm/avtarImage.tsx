@@ -13,8 +13,8 @@ export const AvtarImage: React.FC = () => {
                 }}
             >
                 {({ setFieldValue, values, submitForm }) => (
-                    <Form className="flex flex-col items-center justify-start bg-white p-6">
-                        <div className="flex flex-col md:flex-row items-center gap-8 p-6">
+                    <Form className="flex flex-col items-center justify-start bg-white p-6 ">
+                        <div className="flex flex-col md:flex-row mt-3 items-center gap-8 p-6">
                             <div className="flex flex-col items-center">
                                 <label htmlFor="avatar" className="relative cursor-pointer group">
                                     <img

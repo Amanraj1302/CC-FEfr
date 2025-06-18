@@ -4,7 +4,6 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { Home } from '../Pages/Home'
 import {GetOtp} from '../Pages/GetOtp'
 import { SignUp} from '../Pages/SignUp';
-import  { Dashboard } from '../Pages/Dashboard';
 import { ProtectedRoutes } from "./ProtectedRoutes";
 export const Routers:React.FC= () => {
   return (
