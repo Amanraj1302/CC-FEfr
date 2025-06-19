@@ -4,6 +4,7 @@ import React, { createContext, useState, useContext, ReactNode } from 'react';
 interface AuthContextType {
   isLoggedIn: boolean;
   userEmail: string;
+  userName: string;
   login: (email: string) => void;
   logout: () => void;
 }
@@ -11,6 +12,7 @@ interface AuthContextType {
 const defaultAuthContext: AuthContextType = {
   isLoggedIn: false,
   userEmail: '',
+  userName:'',
   login: () => { },
   logout: () => { },
 };
@@ -25,12 +27,14 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [auth, setAuth] = useState<Omit<AuthContextType, 'login' | 'logout'>>({
     isLoggedIn: false,
     userEmail: '',
+    userName: '',
   });
 
-  const login = (email: string): void => {
+  const login = ( email: any): void => {
     setAuth({
       isLoggedIn: true,
-      userEmail: email,
+      userEmail: email.email,
+      userName: '',
     });
   };
 
@@ -38,6 +42,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     setAuth({
       isLoggedIn: false,
       userEmail: '',
+      userName: '',
     });
   };
 

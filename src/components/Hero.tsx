@@ -9,10 +9,12 @@ import img4 from '../assets/img4.jpg';
 
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
+import {useAuth} from '../context/AuthContext'; 
 
 export const Hero: React.FC = () => {
   const navigate = useNavigate();
   const images = [img1, img2, img3, img4];
+  const {isLoggedIn} = useAuth();
 
   const settings = {
     dots: false,
@@ -51,7 +53,13 @@ export const Hero: React.FC = () => {
             the perfect talent for your production
           </p>
           <button
-            onClick={() => navigate("/app/dashboard/0")}
+            onClick={() => {
+              if (!isLoggedIn) {
+                navigate("/app/dashboard/0");
+              } else {
+                alert("You are already logged in!!!");
+              }
+            }}
             className="bg-gradient-to-r from-yellow-400 to-red-500 text-white font-semibold py-2 px-6 rounded hover:opacity-90 transition"
           >
             Create Your Profile

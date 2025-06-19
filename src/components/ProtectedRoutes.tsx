@@ -7,13 +7,13 @@ import ArtistProfile from "../aritistPage/artistProfile";
 export const ProtectedRoutes = () => {
     const navigate = useNavigate();
     const { isLoggedIn } = useAuth();
-    // useEffect(() => {
-    //     if (!isLoggedIn) {
-    //         console.log("User is not logged in, redirecting to signIn");
-    //         console.log("🚀 ~ navigate:", navigate)
-    //         navigate("/signIn");
-    //     }
-    // }, []);
+    useEffect(() => {
+        if (!isLoggedIn) {
+            console.log("User is not logged in, redirecting to signIn");
+            console.log("🚀 ~ navigate:", navigate)
+            navigate("/signIn");
+        }
+    }, []);
 
     return (
         <Routes>
