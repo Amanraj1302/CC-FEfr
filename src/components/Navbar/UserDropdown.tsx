@@ -1,3 +1,5 @@
+import { Navigate } from "react-router-dom";
+
 export const UserDropdown = ({
   userEmail,
   onEditProfile,
@@ -14,7 +16,7 @@ export const UserDropdown = ({
 
     <button
       onClick={onEditProfile}
-      className="w-full px-4 py-3 flex items-center gap-2 text-sm text-gray-700 hover:bg-gray-50 transition"
+      className="w-full px-4 py-3 flex items-center gap-2 text-sm text-gray-700 hover:bg-gray-50 rounded-lg transition"
     >
       <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -34,7 +36,7 @@ export const UserDropdown = ({
 
     <button
       onClick={onLogout}
-      className="w-full px-4 py-3 flex items-center gap-2 text-sm text-gray-700 hover:bg-gray-50 transition"
+      className="w-full px-4 py-3 flex items-center gap-2 text-sm text-gray-700 hover:bg-gray-50 rounded-lg transition"
     >
       <svg
         xmlns="http://www.w3.org/2000/svg"

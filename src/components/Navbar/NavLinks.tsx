@@ -7,7 +7,7 @@ export const NavLinks = () => {
             <li><a className="hover:text-red-500" href="#">About us</a></li>
             <li><a className="hover:text-red-500" href="#">Contact</a></li>
             {isLoggedIn && 
-            <li><a className="hover:text-red-500" href="/profile">Projects</a></li>}
+            <li><a className="hover:text-red-500" href="#">Projects</a></li>}
         </ul>
     );
 };

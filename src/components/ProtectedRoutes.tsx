@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { Route, Routes, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { Dashboard } from "../Pages/Dashboard";
-import ArtistProfile from "../aritistPage/artistProfile";
+import {ProfilePage} from "../aritistPage/artistProfile";
 
 export const ProtectedRoutes = () => {
     const navigate = useNavigate();
@@ -18,7 +18,7 @@ export const ProtectedRoutes = () => {
     return (
         <Routes>
             <Route path="dashboard/:step" element={<Dashboard />} />
-            <Route path="artistProfile" element={< ArtistProfile/>} />
+            <Route path="artistProfile/:email" element={< ProfilePage/>} />
         </Routes>
 
     )

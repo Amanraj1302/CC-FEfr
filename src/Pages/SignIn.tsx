@@ -47,9 +47,10 @@ export const SignIn: React.FC = () => {
           headers: { "Content-Type": "application/json" },
           credentials: "include",
           body: JSON.stringify(values),
-        });
-        const { email} = values;
+        }); 
+        const { email } = values;
         const data = await response.json();
+        console.log("data", data);
         if (!response.ok) {
           toast.error(data.error || "Login failed");
         } else {

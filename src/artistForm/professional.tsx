@@ -37,6 +37,7 @@ export const Professional: React.FC = () => {
   const step = useParams<{ step: string }>().step || "";
   const { userEmail } = useAuth();
   const extractProfessionalData = (data: any): ProfessionalFormValues => ({
+
   talentCategory: data.talentCategory,
   height: data.height,
   age: data.age,
@@ -82,7 +83,7 @@ export const Professional: React.FC = () => {
 
       <Formik<ProfessionalFormValues>
         initialValues={{
-         ... {talentCategory: "",
+         ... { talentCategory: "",
           height: "",
           age: "",
           screenAge: "",
