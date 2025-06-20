@@ -11,7 +11,7 @@ export const Navbar: React.FC = () => {
   const [showDropdown, setShowDropdown] = useState(false);
   const { pathname } = useLocation();
   const navigate = useNavigate();
-  const { isLoggedIn, userEmail, logout } = useAuth();
+  const { isLoggedIn, logout ,userName} = useAuth();
 
   const showSignIn = !pathname.endsWith('signIn');
   const showSignUp = !pathname.endsWith('signUp');
@@ -57,8 +57,8 @@ export const Navbar: React.FC = () => {
                 />
                 {showDropdown && (
                   <UserDropdown
-                    userEmail={userEmail}
-                    onEditProfile={() => {setShowDropdown(false); navigate(`/app/dashboard/0`)}}
+                    userName={userName}
+                    onEditProfile={() => {setShowDropdown(false); navigate(`/app/dashboard/0?mode=edit`);}}
                     onLogout={handleLogout}
                   />
                 )}
@@ -79,7 +79,7 @@ export const Navbar: React.FC = () => {
         {isOpen && (
           <div className="absolute top-10  left-0 w-full bg-white shadow-md flex flex-col items-center space-y-4 py-4 md:hidden">
            {isLoggedIn ?
-           (<UserDropdown userEmail={userEmail} onEditProfile={() => setShowDropdown(false)} onLogout={() => { handleLogout(); }} />)
+           (<UserDropdown userName={userName} onEditProfile={() => setShowDropdown(false)} onLogout={() => { handleLogout(); }} />)
            :(<><NavLinks /><AuthButtons showSignIn={true} showSignUp={true} /></>)
            }
           </div>

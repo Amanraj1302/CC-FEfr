@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate} from 'react-router-dom'
-import { useAuth } from "../context/AuthContext";
+
 
 interface Profile {
   email: string;
   name: string;
+  _id: string;
   location: string;
   tags: string[];
   img: string;
@@ -13,7 +14,7 @@ interface Profile {
 export const Profiles: React.FC = () => {
   const [profiles, setProfiles] = useState<Profile[]>([]);
   const navigate = useNavigate();
-  const {  userEmail  } = useAuth();
+  
   
 
   useEffect(() => {
@@ -60,7 +61,7 @@ export const Profiles: React.FC = () => {
             </div>
             <button
               className="mt-4 border border-red-500 text-red-500 px-3 py-1 rounded"
-              onClick={() => { navigate(`/app/artistProfile/${userEmail}`); }}
+              onClick={() => { navigate(`/app/artistProfile/${profile._id}`); }}
             >
               View profile
             </button>

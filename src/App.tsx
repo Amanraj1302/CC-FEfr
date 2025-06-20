@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import { useLocation } from 'react-router-dom';
 import { Navbar } from './components/Navbar/Navbar';
 import { Routers } from './components/Routers';
 import './App.css';
@@ -11,8 +10,7 @@ import { FadeLoader } from 'react-spinners';
 
 
 function App() {
-  const { pathname } = useLocation();
-  const { isLoggedIn, login } = useAuth();
+  const { login } = useAuth();
   const [isloading, setIsLoading] = useState(true);
   const refreshToken = async () => {
     try {
@@ -25,8 +23,9 @@ function App() {
       console.log("response", response);
       if (!response.ok) return;
       const result = await response.json();
-      const email = result.data;
-      login(email );
+      const email = result.data.email;
+      const name = result.data.userName;
+      login({ email, userName: name });
 
     } catch (err) {
       console.log("###########", err);

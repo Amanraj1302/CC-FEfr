@@ -34,7 +34,7 @@ export const SignIn: React.FC = () => {
   const navigate = useNavigate();
 
 
-  const { login,isLoggedIn } = useAuth();
+  const { login, isLoggedIn } = useAuth();
   const { values, handleBlur, errors, handleSubmit, touched, handleChange } = useFormik<FormValues>({
     initialValues: {
       email: "",
@@ -47,18 +47,23 @@ export const SignIn: React.FC = () => {
           headers: { "Content-Type": "application/json" },
           credentials: "include",
           body: JSON.stringify(values),
-        }); 
+        });
         const { email } = values;
         const data = await response.json();
+        const artist_id = data.artist_id;
         console.log("data", data);
         if (!response.ok) {
           toast.error(data.error || "Login failed");
         } else {
           toast.success("Login successful");
-          login(email);
+          login({email,userName:data.name});
           // login(email , role, artistProfileStatus , directorProfileStatus);
-          action.resetForm();                  
-         navigate(`/app/dashboard/0`);         
+          action.resetForm();
+          if(!artist_id){           
+            navigate(`/app/dashboard/0`);
+          }else{
+          navigate(`/app/artistProfile/${artist_id}`);
+        }
         }
       } catch (error: any) {
         toast.error(error.message || "Something went wrong");
@@ -67,22 +72,22 @@ export const SignIn: React.FC = () => {
     },
     validationSchema: loginSchema,
   });
-  
-          // if(role){
-          //   if(role === "artist"){
-          //     if(artistProfileStatus === "complete"){
-          //       navigate(`/app/artist/profile/1`);
-          //     }else{
-          //       navigate(`/app/dashboard/0`);
-          //     }
-          //   }else if(role === "director"){
-          //     if(!directorProfileStatus){
-          //       navigate(`/app/director/profile/1`);
-          //     }else{
-          //       navigate(`/app/dashboard/0`);
-          //     }
-          //   }
-          // }
+
+  // if(role){
+  //   if(role === "artist"){
+  //     if(artistProfileStatus === "complete"){
+  //       navigate(`/app/artist/profile/1`);
+  //     }else{
+  //       navigate(`/app/dashboard/0`);
+  //     }
+  //   }else if(role === "director"){
+  //     if(!directorProfileStatus){
+  //       navigate(`/app/director/profile/1`);
+  //     }else{
+  //       navigate(`/app/dashboard/0`);
+  //     }
+  //   }
+  // }
   return (
     <div className="min-h-screen flex items-center justify-center bg-white px-4">
       <div className="w-full max-w-sm bg-white p-4 rounded shadow">

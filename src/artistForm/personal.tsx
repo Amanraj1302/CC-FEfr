@@ -3,7 +3,7 @@ import { Formik, useFormik } from "formik";
 import { personalSchema } from "../Schemas/artistSchema";
 import { toast, ToastContainer } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
-import { useNavigate, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { indianStates, languages } from "../constants/indianStates";
 import { useAuth } from "../context/AuthContext";
 import { saveFormData, getFormData, clearFormData } from '../utils/localStorageHelper';
@@ -44,23 +44,27 @@ const fields: Field[] = [
 export const Personal: React.FC = () => {
   const navigate = useNavigate();
   const step = useParams<{ step: string }>().step || "";
+  const location = useLocation();
+
+  const queryParams = new URLSearchParams(location.search);
+  const mode = queryParams.get("mode");
   const extractPersonalData = (data: any): ArtistFormValues => ({
-  fullName: data.fullName,
-  email: data.email,
-  whatsapp: data.whatsapp,
-  calling: data.calling,
-  shortBio: data.shortBio,
-  gender: data.gender,
-  language: data.language,
-  homeCity: data.homeCity,
-  homeState: data.homeState,
-  currentCity: data.currentCity,
-  currentState: data.currentState,
-  instagram: data.instagram,
-  youtube: data.youtube,
-  twitter: data.twitter,
-  linkedin: data.linkedin,
-});
+    fullName: data.fullName,
+    email: data.email,
+    whatsapp: data.whatsapp,
+    calling: data.calling,
+    shortBio: data.shortBio,
+    gender: data.gender,
+    language: data.language,
+    homeCity: data.homeCity,
+    homeState: data.homeState,
+    currentCity: data.currentCity,
+    currentState: data.currentState,
+    instagram: data.instagram,
+    youtube: data.youtube,
+    twitter: data.twitter,
+    linkedin: data.linkedin,
+  });
 
   // default values
   const defaultValues: ArtistFormValues = {
@@ -69,16 +73,15 @@ export const Personal: React.FC = () => {
   };
   const savedValues = getFormData();
   const initialValues = { ...defaultValues, ...savedValues };
-  
+
   const { values, handleChange, handleBlur, handleSubmit, errors, touched } = useFormik<ArtistFormValues>({
     initialValues,
     validationSchema: personalSchema,
     onSubmit: async (values) => {
-     const cleanedData = extractPersonalData(values);
+      const cleanedData = extractPersonalData(values);
       try {
-
         const response = await fetch("http://localhost:5000/api/artist/profile", {
-          method: "POST",
+          method: mode === "edit" ? "PUT" : "POST",
           headers: { "Content-Type": "application/json" },
           credentials: "include",
           body: JSON.stringify(cleanedData),
@@ -88,7 +91,7 @@ export const Personal: React.FC = () => {
 
         if (response.ok) {
           toast.success("Artist profile submitted!");
-          
+
           navigate(`/app/dashboard/${+step + 1}`);
         } else {
           toast.error(data.message || "Submission failed.");
@@ -103,7 +106,7 @@ export const Personal: React.FC = () => {
     const cleanedData = extractPersonalData(values);
     saveFormData(cleanedData);
     toast.success("Draft saved!");
-  };  
+  };
 
 
   return (

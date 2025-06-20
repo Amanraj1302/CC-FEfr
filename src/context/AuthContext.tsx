@@ -5,7 +5,7 @@ interface AuthContextType {
   isLoggedIn: boolean;
   userEmail: string;
   userName: string;
-  login: (data: string | { email: string; userName?: string }) => void;
+  login: (data: { email: string; userName: string }) => void;
   logout: () => void;
 }
 
@@ -13,7 +13,7 @@ interface AuthContextType {
 const defaultAuthContext: AuthContextType = {
   isLoggedIn: false,
   userEmail: '',
-  userName:'',
+  userName: '',
   login: () => { },
   logout: () => { },
 };
@@ -31,21 +31,14 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     userName: '',
   });
 
-  const login = (data: string | { email: string; userName?: string }): void => {
-  if (typeof data === "string") {
-    setAuth({
-      isLoggedIn: true,
-      userEmail: data,
-      userName: '',
-    });
-  } else {
+  const login = (data: { email: string; userName: string }): void => {
     setAuth({
       isLoggedIn: true,
       userEmail: data.email,
-      userName: data.userName || '',
+      userName: data.userName ,
     });
-  }
-};
+
+  };
 
 
   const logout = (): void => {

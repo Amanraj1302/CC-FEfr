@@ -1,17 +1,17 @@
 import { Navigate } from "react-router-dom";
 
 export const UserDropdown = ({
-  userEmail,
+  userName,
   onEditProfile,
   onLogout,
 }: {
-  userEmail: string;
+  userName: string;
   onEditProfile: () => void;
   onLogout: () => void;
 }) => (
   <div className="absolute right-2 top-full mt-2 w-64 max-w-xs bg-white border border-gray-200 rounded-lg shadow-lg ">
     <div className="px-4 py-3 text-sm text-gray-700 font-medium border-b border-gray-100 break-words truncate">
-      Hi, <strong className="break-all">{userEmail}</strong>
+      Hi, <strong className="break-all">{userName}</strong>
     </div>
 
     <button
