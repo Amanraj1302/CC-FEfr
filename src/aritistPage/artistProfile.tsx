@@ -69,8 +69,9 @@ export const ProfilePage: React.FC = () => {
   const photoUrls = artist.photos?.length
     ? artist.photos.map(p => `http://localhost:5000/uploads/${p}`)
     : [];
-
-  const headshotUrl = artist.headshot ? `http://localhost:5000/uploads/${artist.headshot}` : "/default.jpg";
+  const dpPath  = artist?.photos?.find((photo)=>(photo.includes("/artistDp")));
+  const artistDp =  `http://localhost:5000/uploads/${dpPath}`;
+  console.log("#####",artistDp);
 
   const monologues = artist.monologues || [];
   function extractYouTubeId(url: string): string {
@@ -92,7 +93,7 @@ export const ProfilePage: React.FC = () => {
       {/* Profile Header */}
       <div className="w-full bg-black/30 rounded-3xl shadow-xl p-6 flex flex-col md:flex-row justify-between items-center gap-6 mb-6">
         <div className="flex flex-col md:flex-row items-center gap-4">
-          <img src={headshotUrl} alt={artist.fullName} className="w-32 h-32 rounded-xl object-cover" />
+          <img src={artistDp} alt={artist.fullName} className="w-32 h-32 rounded-xl object-cover" />
           <div className="text-center md:text-left">
             <h2 className="text-2xl font-bold">{artist.fullName}</h2>
             {artist.talentCategory?.length && (

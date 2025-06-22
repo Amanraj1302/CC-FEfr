@@ -3,13 +3,39 @@ import React from 'react'
 import { TiTick } from "react-icons/ti";
 import { RxCross2 } from "react-icons/rx";
 import { saveFormData, getFormData, clearFormData } from '../utils/localStorageHelper';
+import { toast } from 'react-toastify';
+import { useAuth } from '../context/AuthContext';
 export const AvtarImage: React.FC = () => {
+    const { userEmail } = useAuth();
+
     return (
         <div>
             <Formik
                 initialValues={{ avatar: null, confirmed: false }}
-                onSubmit={(values) => {
-                    console.log("Uploaded Avatar:", values.avatar);
+                onSubmit={async (values) => {
+                    try {
+                        const formData = new FormData();
+                        formData.append("artistDp", values.avatar as unknown as File);
+                        formData.append("email", userEmail);
+                        const response = await fetch(`http://localhost:5000/api/artist/artistDp/?email=${userEmail}`, {
+                            method: "POST",
+                            // headers: { "Content-Type": "multipart/form-data" },
+                            credentials: "include",
+                            body: formData,
+                        })
+                        const data = await response.json();
+
+                        if (response.ok) {
+                            toast.success("Artist profile submitted!");
+
+                        } else {
+                            toast.error(data.message || "Submission failed.");
+                        }
+
+                    } catch (err) {
+                        toast.error("Something went wrong.");
+                    }
+
                 }}
             >
                 {({ setFieldValue, values, submitForm }) => (
@@ -56,14 +82,14 @@ export const AvtarImage: React.FC = () => {
                                     />
                                 </label>
 
-                               
+
                                 {values.avatar && !values.confirmed && (
                                     <div className="flex gap-2 mt-2">
                                         <button
                                             type="button"
                                             onClick={() => {
-                                                setFieldValue("confirmed", true); 
-                                                submitForm(); 
+                                                setFieldValue("confirmed", true);
+                                                submitForm();
                                             }}
                                             className="text-xs px-1 py-1 bg-green-500 text-white rounded hover:bg-green-600"
                                         >
@@ -72,7 +98,7 @@ export const AvtarImage: React.FC = () => {
                                         <button
                                             type="button"
                                             onClick={() => {
-                                                document.getElementById("avatar")?.click(); 
+                                                document.getElementById("avatar")?.click();
                                             }}
                                             className="text-xs px-1 py-1 bg-red-500 text-white rounded hover:bg-red-600"
                                         >
