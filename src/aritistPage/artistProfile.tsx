@@ -41,7 +41,7 @@ export const ProfilePage: React.FC = () => {
   const { email } = useParams<{ email: string }>();
   const [artist, setArtist] = useState<Artist | null>(null);
   const [loading, setLoading] = useState(true);
-
+  const [zoomedImage, setZoomedImage] = useState<string | null>(null);
   useEffect(() => {
     async function fetchArtist() {
       try {
@@ -69,9 +69,9 @@ export const ProfilePage: React.FC = () => {
   const photoUrls = artist.photos?.length
     ? artist.photos.map(p => `http://localhost:5000/uploads/${p}`)
     : [];
-  const dpPath  = artist?.photos?.find((photo)=>(photo.includes("/artistDp")));
-  const artistDp =  `http://localhost:5000/uploads/${dpPath}`;
-  console.log("#####",artistDp);
+  const dpPath = artist?.photos?.find((photo) => (photo.includes("/artistDp")));
+  const artistDp = `http://localhost:5000/uploads/${dpPath}`;
+  console.log("#####", artistDp);
 
   const monologues = artist.monologues || [];
   function extractYouTubeId(url: string): string {
@@ -166,13 +166,32 @@ export const ProfilePage: React.FC = () => {
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
                 {photoUrls.map((url, idx) => (
                   <div key={idx} className="relative rounded-xl overflow-hidden group">
-                    <img src={url} alt={`Photo ${idx + 1}`} className="w-full h-auto object-cover rounded-xl shadow-md" />
-                    <div className="absolute top-2 right-2 bg-white/80 rounded-full p-1 group-hover:scale-110 transition">
+                    <img
+                      src={url}
+                      alt={`Photo ${idx + 1}`}
+                      className="w-full h-auto object-cover rounded-xl shadow-md"
+                    />
+                    <div
+                      onClick={() => setZoomedImage(url)}
+                      className="absolute top-2 right-2 bg-white/80 rounded-full p-1 cursor-pointer group-hover:scale-110 transition"
+                    >
                       <ZoomInIcon className="w-4 h-4 text-gray-800" />
                     </div>
                   </div>
                 ))}
               </div>
+            </div>
+          )}
+          {zoomedImage && (
+            <div
+              className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center"
+              onClick={() => setZoomedImage(null)}
+            >
+              <img
+                src={zoomedImage}
+                alt="Zoomed"
+                className="max-w-full max-h-full rounded-xl shadow-lg"
+              />
             </div>
           )}
           {/* Video Reel */}
@@ -182,13 +201,13 @@ export const ProfilePage: React.FC = () => {
                 <IoVideocam className="text-red-600 text-xl" /> Video Reel
               </h2>
               <iframe
-                src={getYouTubeEmbedUrl(artist.videoReel)}
-                title="Video reel"
+                src={getYouTubeEmbedUrl(artist.videoReel, true)}
+                title="Video Reel"
                 frameBorder="0"
                 allow="autoplay; encrypted-media"
                 allowFullScreen
-                className="w-full h-80 rounded-lg"
-              ></iframe>
+                className="w-full h-64 md:h-80 rounded-lg"
+              />
             </div>
           )}
 
@@ -254,27 +273,28 @@ export const ProfilePage: React.FC = () => {
 
       {/* Bottom Monologue Videos */}
       {monologues.length > 0 && (
-  <div className="w-full mt-12">
-    <h2 className="text-lg font-semibold text-gray-800 flex items-center gap-2 mb-6">
-      <FaMicrophone className="text-red-600 text-xl" /> Monologue
-    </h2>
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-      {monologues.map((m, idx) => (
-        <div key={idx} className="shadow-md border p-4 rounded-lg">
-          <h2 className="text-lg text-red-600 font-semibold mb-2">{m.language} Monologue</h2>
-          <iframe
-            src={getYouTubeEmbedUrl(m.url)}
-            title={`${m.language} monologue`}
-            frameBorder="0"
-            allow="autoplay; encrypted-media"
-            allowFullScreen
-            className="w-full h-64 md:h-80 rounded-lg"
-          ></iframe>
+        <div className="w-full mt-12">
+          <h2 className="text-lg font-semibold text-gray-800 flex items-center gap-2 mb-6">
+            <FaMicrophone className="text-red-600 text-xl" /> Monologue
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {monologues.map((m, idx) => (
+              <div key={idx} className="shadow-md border p-4 rounded-lg">
+                <h2 className="text-lg text-red-600 font-semibold mb-2">{m.language} Monologue</h2>
+                <iframe
+                  src={getYouTubeEmbedUrl(m.url, false)}
+                  title={`${m.language} monologue`}
+                  frameBorder="0"
+                  allow="autoplay; encrypted-media"
+                  allowFullScreen
+                  className="w-full h-64 md:h-80 rounded-lg"
+                />
+
+              </div>
+            ))}
+          </div>
         </div>
-      ))}
-    </div>
-  </div>
-)}
+      )}
 
     </div>
   );

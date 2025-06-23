@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Navbar } from './components/Navbar/Navbar';
-import { Routers } from './components/Routers';
+import { Routers } from './routers/Routers';
 import './App.css';
 import './index.css';
 import { ToastContainer } from 'react-toastify';
