@@ -1,12 +1,12 @@
 import React, { useEffect } from 'react';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 
-import { AvtarImage } from '../artistForm/avtarImage';
-import { Personal } from '../artistForm/personal';
-import { Stepper } from '../artistForm/steper';
-import { Professional } from '../artistForm/professional';
-import { UploadPhotos } from "../artistForm/uploadPhotos";
-import { DialectVideoForm } from '../artistForm/monologue';
+import { AvtarImage } from '../formPages/avtarImage';
+import { Personal } from '../formPages/personal';
+import { Stepper } from '../formPages/steper';
+import { Professional } from '../formPages/professional';
+import { UploadPhotos } from "../formPages/uploadPhotos";
+import { DialectVideoForm } from '../formPages/monologue';
 
 
 export const Dashboard: React.FC = () => {
