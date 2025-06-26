@@ -1,4 +1,5 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 
 interface Casting {
   title: string;
@@ -10,7 +11,7 @@ interface Casting {
   role: string;
 }
 
-const castings: Casting[]= [
+const castings: Casting[] = [
   {
     title: "Amazon & Flipkart print shoot audition",
     type: "Advertisement shoot",
@@ -20,7 +21,6 @@ const castings: Casting[]= [
     date: "25/05/2025 - 05/08/2025",
     role: "Lead supporting, Male (23-30 Years), (Haryanvi)",
   },
-  
   {
     title: "Amazon & Flipkart print shoot audition",
     type: "Advertisement shoot",
@@ -41,40 +41,63 @@ const castings: Casting[]= [
   },
 ];
 
+const CastingCard = ({
+  title,
+  type,
+  status,
+  statusColor,
+  location,
+  date,
+  role,
+}: {
+  title: string;
+  type: string;
+  status: string;
+  statusColor: string;
+  location: string;
+  date: string;
+  role: string;
+}) => {
+  const navigate = useNavigate();
 
-const CastingCard = ({ title, type, status, statusColor, location, date, role }:
-  { title: string; type: string; status: string; statusColor: string; location: string; date: string; role: string }) => (
-  <div className="bg-white border rounded-lg shadow p-4 max-w-md">
-    <h3 className="text-lg font-semibold">{title}</h3>
-    <p className="text-sm text-gray-600">{type}</p>
-    
-    <span className={`inline-block mt-2 px-3 py-1 text-white text-xs rounded-full ${statusColor}`}>
-      {status}
-    </span>
+  return (
+    <div className="bg-white border rounded-lg shadow p-4 max-w-md">
+      <h3 className="text-lg font-semibold">{title}</h3>
+      <p className="text-sm text-gray-600">{type}</p>
 
-    <div className="mt-4 space-y-2 text-sm text-gray-700">
-      <div className="flex items-center gap-2">
-        <span>📍</span> <span>Casting: {location}</span>
+      <span
+        className={`inline-block mt-2 px-3 py-1 text-white text-xs rounded-full ${statusColor}`}
+      >
+        {status}
+      </span>
+
+      <div className="mt-4 space-y-2 text-sm text-gray-700">
+        <div className="flex items-center gap-2">
+          <span>📍</span> <span>Casting: {location}</span>
+        </div>
+        <div className="flex items-center gap-2">
+          <span>📅</span> <span>Casting: {date}</span>
+        </div>
       </div>
-      <div className="flex items-center gap-2">
-        <span>📅</span> <span>Casting: {date}</span>
+
+      <hr className="my-4" />
+
+      <h4 className="font-semibold">Roles Needed</h4>
+      <div className="mt-2 inline-block border text-red-500 border-red-500 px-3 py-1 rounded-full text-xs">
+        {role}
       </div>
+
+      <button
+        onClick={() => navigate("/projectPage")}
+        className="mt-4 w-full bg-red-600 text-white py-2 rounded-md"
+      >
+        View details
+      </button>
     </div>
+  );
+};
 
-    <hr className="my-4" />
-
-    <h4 className="font-semibold">Roles Needed</h4>
-    <div className="mt-2 inline-block border text-red-500 border-red-500 px-3 py-1 rounded-full text-xs">
-      {role}
-    
-    </div>
-
-    <button className="mt-4 w-full bg-red-600 text-white py-2 rounded-md">View details</button>
-  </div>
-);
-
-
- export const Projects: React.FC=() => {
+export const Projects: React.FC = () => {
   return (
     <section className="px-10 py-12 bg-gray-50">
       <div className="flex justify-between items-center mb-6">
@@ -90,7 +113,4 @@ const CastingCard = ({ title, type, status, statusColor, location, date, role }:
       </div>
     </section>
   );
-}
-
-
-
+};

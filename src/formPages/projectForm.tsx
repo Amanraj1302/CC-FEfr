@@ -2,6 +2,7 @@ import React from 'react';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import { UploadBanner } from '../constants/uploadPdf';
 import { projectValidationSchema } from '../Schemas/projectSchema';
+//import { useAuth } from '../context/AuthContext';
 
 const initialValues = {
   projectName: '',
@@ -44,10 +45,43 @@ const fieldConfig = [
   { name: 'language', label: 'Language', type: 'text', placeholder: 'Enter language' },
 ];
 
-export const ProjectForm = () => {
-  const handleSubmit = (values:any) => {
-    console.log('Form submitted:', values);
-  };
+export const ProjectForm: React.FC = () => {
+  //const { userEmail } = useAuth();
+ const handleSubmit = async (values: any, { resetForm }: any) => {
+  try {
+    const formData = new FormData();
+   // formData.append("email", userEmail);
+    // Append all form fields
+    for (const key in values) {
+      if (key !== "banner") {
+        formData.append(key, values[key]);
+      }
+    }
+
+    // Append banner file
+    formData.append("banner", values.banner);
+
+    const response = await fetch("http://localhost:5000/api/project/create", {
+      method: "POST",
+      body: formData,
+    });
+
+    const data = await response.json();
+
+    if (response.ok) {
+      alert("Project created successfully");
+      console.log(data);
+      resetForm();
+    } else {
+      alert(data.error || "Something went wrong");
+      console.error(data);
+    }
+  } catch (error) {
+    console.error("Error:", error);
+    alert("An error occurred while submitting the form.");
+  }
+};
+
 
   type FieldConfigItem = {
     name: string;

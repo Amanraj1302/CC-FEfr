@@ -60,7 +60,7 @@ export const Navbar: React.FC = () => {
                     userName={userName}
                     onEditProfile={() => {setShowDropdown(false); navigate(`/app/dashboard/0?mode=edit`);}}
                     onLogout={handleLogout}
-                    onChangePassword={() => {setShowDropdown(false)}}
+                    onChangePassword={() => {setShowDropdown(false); navigate(`/chnage-password`);}}
                   />
                 )}
               </div>

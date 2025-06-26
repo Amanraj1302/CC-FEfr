@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { Route, Routes, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { Dashboard } from "../Pages/Dashboard";
-import {ProfilePage} from "../aritistPage/artistProfile";
+import {ProfilePage} from "../destinationPage/artistProfile";
 
 export const ProtectedRoutes = () => {
     const navigate = useNavigate();
