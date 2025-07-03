@@ -30,7 +30,7 @@ const FetchUploadedPhotos: React.FC<{ mode: string | null; email: string }> = ({
 
   useEffect(() => {
     const fetchPhotos = async () => {
-      if (mode === "edit") {
+      if (mode === "edit" ) {
         try {
           const res = await fetch(`http://localhost:5000/api/artist/upload?email=${email}`, {
             credentials: "include",
@@ -105,7 +105,7 @@ export const UploadPhotos: React.FC = () => {
     }
 
     try {
-      const res = await fetch(`http://localhost:5000/api/artist/upload`, {
+      const res = await fetch(`http://localhost:5000/api/artist/upload?email=${userEmail}`, {
         method: "PUT",
         credentials: "include",
         body: formData,

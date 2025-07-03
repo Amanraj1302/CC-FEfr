@@ -55,19 +55,37 @@ export const professionalSchema = Yup.object().shape({
 });
 
 
-const FILE_SIZE = 5* 1024 * 1024; // 5MB
+const FILE_SIZE = 5 * 1024 * 1024; // 5MB
 const SUPPORTED_FORMATS = ["image/jpg", "image/jpeg", "image/png", "image/webp"];
+
+const isFile = value => value instanceof File;
 
 const fileValidation = Yup.mixed()
   .required("This field is required")
-  .test("fileSize", "File too large (max 5MB)", value => value && value.size <= FILE_SIZE)
-  .test("fileFormat", "Unsupported file format", value => value && SUPPORTED_FORMATS.includes(value.type));
+  .test("fileSize", "File too large (max 5MB)", value => {
+    if (!value) return false;
+    if (typeof value === "string") return true;
+    return isFile(value) ? value.size <= FILE_SIZE : false;
+  })
+  .test("fileFormat", "Unsupported file format", value => {
+    if (!value) return false;
+    if (typeof value === "string") return true;
+    return isFile(value) ? SUPPORTED_FORMATS.includes(value.type) : false;
+  });
 
 const optionalFileValidation = Yup.mixed()
   .nullable()
   .notRequired()
-  .test("fileSize", "File too large (max 5MB)", value => !value || value.size <= FILE_SIZE)
-  .test("fileFormat", "Unsupported file format", value => !value || SUPPORTED_FORMATS.includes(value.type));
+  .test("fileSize", "File too large (max 5MB)", value => {
+    if (!value) return true;
+    if (typeof value === "string") return true;
+    return isFile(value) ? value.size <= FILE_SIZE : false;
+  })
+  .test("fileFormat", "Unsupported file format", value => {
+    if (!value) return true;
+    if (typeof value === "string") return true;
+    return isFile(value) ? SUPPORTED_FORMATS.includes(value.type) : false;
+  });
 
 export const uploadPhotosSchema = Yup.object().shape({
   headshot: fileValidation.label("Headshot"),
@@ -76,6 +94,7 @@ export const uploadPhotosSchema = Yup.object().shape({
   threeQuarter: fileValidation.label("Three-Quarter Shot"),
   profile: optionalFileValidation.label("Profile Shot (Optional)"),
 });
+
 
 
 export const monologueSchema = Yup.object({
