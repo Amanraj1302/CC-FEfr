@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import { validationSchema } from "../Schemas/chnagePassword";
 import { Eye, EyeOff } from "lucide-react";
+import { toast } from "react-toastify";
 
 export const ChangePassword = () => {
   const navigate = useNavigate();
@@ -20,12 +21,33 @@ export const ChangePassword = () => {
     }));
   };
 
-  const handleSubmit = (values: any, { resetForm }: any) => {
-    console.log("Submitted:", values);
-    alert("Password changed successfully!");
+ const handleSubmit = async (values: any, { resetForm }: any) => {
+  try {
+    const res = await fetch("http://localhost:5000/api/users/change-password", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      credentials: "include",
+      body: JSON.stringify(values),
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      toast.error(data.error || "Failed to change password");
+      return;
+    }
+
+    toast.success("Password changed successfully!");
     resetForm();
-    navigate("/dashboard"); 
-  };
+    navigate("/home");
+  } catch (err) {
+    console.error(err);
+    toast.error("Something went wrong");
+  }
+};
+
 
   const fields = [
     {

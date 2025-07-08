@@ -91,7 +91,7 @@ export const ProfilePage: React.FC = () => {
   return (
     <div className="flex flex-col items-center pt-20 px-4 md:px-20">
       {/* Profile Header */}
-      <div className="w-full bg-black/30 rounded-3xl shadow-xl p-6 flex flex-col md:flex-row justify-between items-center gap-6 mb-6">
+      <div className="w-full  bg-black/30 rounded-3xl shadow-xl p-6 flex flex-col md:flex-row justify-between items-center gap-6 mb-6">
         <div className="flex flex-col md:flex-row items-center gap-4">
           <img src={artistDp} alt={artist.fullName} className="w-32 h-32 rounded-xl object-cover" />
           <div className="text-center md:text-left">

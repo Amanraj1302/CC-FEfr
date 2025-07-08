@@ -1,148 +1,136 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState } from "react";
+import { useLocation } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+interface Project {
+  _id: string;
+  projectName: string;
+  typeOfProject: string;
+  castingLocation: string;
+  castingStart: string;
+  castingEnd: string;
+  shootingStart: string;
+  shootingEnd: string;
+  banner: string | null;
+  description: string;
+  role: string;
+}
+
+// helper to format date as MM/DD/YYYY
+const formatDate = (dateString: string) => {
+  const date = new Date(dateString);
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  const year = date.getFullYear();
+  return `${month}/${day}/${year}`;
+};
 
 export const ProjectPage: React.FC = () => {
+  const location = useLocation();
+  const navigate = useNavigate();
+  const stateProjects: Project[] | undefined = location.state?.projects;
+
+  const [projects, setProjects] = useState<Project[]>(stateProjects || []);
   const [activeIndex, setActiveIndex] = useState<number>(0);
 
-  const projects = [
-    {
-      title: 'Amazon & Flipkart print shoot audition',
-      subtitle: 'Advertisement shoot',
-      status: 'Casting now',
-      statusColor: 'green',
-      image: 'https://via.placeholder.com/150',
-      castingLocation: 'Borivali, Maharashtra',
-      shootingLocation: 'NY City, USA',
-      castingDate: '25/05/2025 – 25/08/2025',
-      shootingDate: '20/08/2025 – 20/01/2026',
-      about: 'This is an advertisement shoot for Amazon and Flipkart products. It involves e-commerce props and indoor studio setup.',
-      role: 'Lead supporting, Male (23–30 Years), (Haryanvi)',
-    },
-    {
-      title: 'Castings for zee tv show',
-      subtitle: 'Acting & Advertisement shoot',
-      status: 'Casting soon',
-      statusColor: 'yellow',
-      image: 'https://via.placeholder.com/150',
-      castingLocation: 'Bihar',
-      shootingLocation: 'Hisar, Haryana',
-      castingDate: '07/07/2025 – 14/07/2025',
-      shootingDate: '15/07/2025 – 30/07/2025',
-      about: 'TV drama casting for daily soap series on Zee TV. Seeking multiple age groups.',
-      role: 'Main male role, age 30–40, must be fluent in Hindi.',
-    },
-    {
-      title: 'Kids ad audition for tv',
-      subtitle: 'Acting & Advertisement shoot',
-      status: 'Casting open',
-      statusColor: 'green',
-      image: 'https://via.placeholder.com/150',
-      castingLocation: 'Mumbai',
-      shootingLocation: 'Goa',
-      castingDate: '01/08/2025 – 10/08/2025',
-      shootingDate: '12/08/2025 – 25/08/2025',
-      about: 'Audition for a popular kids’ toy ad campaign. Outdoor fun theme.',
-      role: 'Boy or Girl, age 5–10, expressive and playful.',
-    },
-  ];
-
   const activeProject = projects[activeIndex];
-  
+
   useEffect(() => {
     window.scrollTo(0, 0);
-  }, []);
+
+    if (!stateProjects) {
+      fetch("http://localhost:5000/api/project/projects", {
+        credentials: "include",
+      })
+        .then((res) => res.json())
+        .then((data) => setProjects(data.projects))
+        .catch(console.error);
+    }
+  }, [stateProjects]);
+
+  if (!activeProject) {
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <p>Loading projects...</p>
+      </div>
+    );
+  }
+
+  const shootingRange = `${formatDate(activeProject.shootingStart)} - ${formatDate(activeProject.shootingEnd)}`;
+  const castingRange = `${formatDate(activeProject.castingStart)} - ${formatDate(activeProject.castingEnd)}`;
 
   return (
     <div className="w-full h-full top-10 py-10 flex">
-      {/* Fixed Sidebar */}
-      <div className="w-[40%] h-screen left-0 top-10 bg-white border-r px-6 py-8 overflow-y-auto">
+      {/* Sidebar */}
+      <div className="w-[40%] h-screen bg-white border-r px-6 ml-14 py-8 overflow-y-auto">
         <h1 className="text-2xl font-bold mb-6">Projects</h1>
 
-        {/* Search Box */}
         <input
           type="text"
           placeholder="Search"
           className="w-full px-3 py-2 mb-6 border rounded-md"
         />
 
-        {/* Projects List */}
         <div className="space-y-4">
           {projects.map((project, index) => (
             <div
-              key={index}
+              key={project._id}
               onClick={() => setActiveIndex(index)}
-              className={`p-3 rounded-md cursor-pointer ${activeIndex === index
-                  ? 'bg-red-600 text-white'
-                  : 'bg-transparent text-black hover:bg-gray-100'
-                }`}
+              className={`p-3 rounded-md cursor-pointer flex gap-4 items-center ${
+                activeIndex === index
+                  ? "bg-red-400 text-white"
+                  : "bg-transparent text-black hover:bg-gray-100"
+              }`}
             >
-              <p className="font-medium">{project.title}</p>
-              <p
-                className={`text-sm ${activeIndex === index ? 'text-white' : 'text-gray-500'
+              <img
+                src={project.banner || "https://via.placeholder.com/60"}
+                alt="Banner"
+                className="w-14 h-14 rounded-md object-cover flex-shrink-0"
+              />
+              <div>
+                <p className="font-medium">{project.projectName}</p>
+                <p
+                  className={`text-sm ${
+                    activeIndex === index ? "text-white" : "text-gray-500"
                   }`}
-              >
-                {project.subtitle}
-              </p>
+                >
+                  {project.typeOfProject}
+                </p>
+              </div>
             </div>
           ))}
         </div>
 
-        {/* Create Button */}
-        <button className="mt-10 border border-red-600 text-red-600 px-4 py-2 rounded-md w-full">
+        <button onClick={() => navigate('/projectForm')} className="mt-10 border border-red-600 text-red-600 px-4 py-2 rounded-md w-full">
           + Create new project
         </button>
       </div>
 
-      {/* Right Content */}
+      {/* Content */}
       <div className="p-6 w-full overflow-y-auto">
-        {/* Card Container */}
-        <div className="bg-[#2b2b2b] text-white rounded-xl p-6 flex gap-6 items-start shadow-md relative">
-          {/* Left Image */}
+        <div className="bg-[#2b2b2b] text-white rounded-xl p-6 flex gap-6 items-start shadow-md">
           <img
-            src={activeProject.image}
-            alt="Audition"
-            className="hidden md:flex w-44 h-44 rounded-lg overflow-hidden 
-            flex-shrink-0 items-center justify-center bg-neutral-800"
+            src={activeProject.banner || "https://via.placeholder.com/150"}
+            alt="Project Banner"
+            className="w-full md:w-60 md:h-60 rounded-lg object-cover bg-neutral-800"
           />
 
-          {/* Right Content */}
           <div className="flex-1 space-y-2">
-            {/* Title + Badge + Buttons */}
-            <div className="flex justify-between items-start w-full">
+            <div className="flex justify-between items-start">
               <div className="space-y-1">
-                <h2 className="text-2xl font-bold">{activeProject.title}</h2>
+                <h2 className="text-2xl font-bold">{activeProject.projectName}</h2>
                 <div className="flex items-center gap-3">
                   <span className="text-sm font-semibold text-gray-300">
-                    {activeProject.subtitle}
+                    {activeProject.typeOfProject}
                   </span>
-                  <span
-                    className={`${activeProject.statusColor === 'yellow'
-                        ? 'bg-yellow-100 text-yellow-800'
-                        : 'bg-green-600 text-white'
-                      } text-xs font-medium px-3 py-1 rounded-full`}
-                  >
-                    {activeProject.status}
+                  <span className="bg-green-600 text-white text-xs font-medium px-3 py-1 rounded-full">
+                    Casting now
                   </span>
                 </div>
               </div>
 
-              {/* Top Right Buttons */}
               <div className="flex gap-3">
-                <button className="flex items-center gap-1 bg-red-600 hover:bg-red-700 text-sm text-white px-4 py-1.5 rounded-md font-medium">
+                <button className="bg-red-600 hover:bg-red-700 text-sm text-white px-4 py-1.5 rounded-md font-medium">
                   Copy project link
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="h-4 w-4"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M8 16h8M8 12h8m-6 8h6a2 2 0 002-2V6a2 2 0 00-2-2H8a2 2 0 00-2 2v2"
-                    />
-                  </svg>
                 </button>
                 <button className="bg-red-600 hover:bg-red-700 text-sm text-white px-4 py-1.5 rounded-md font-medium">
                   Apply
@@ -150,40 +138,56 @@ export const ProjectPage: React.FC = () => {
               </div>
             </div>
 
-            {/* Location & Dates */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 text-sm mt-4 text-gray-300">
-              <div className=" mt-4 items-center">
-                <span>🎬</span>
-                <span>Casting: {activeProject.castingLocation}</span>
-              <br />
-                <span>📅</span>
-                <span>Casting: {activeProject.castingDate}</span>
-             
+            <div className="grid sm:grid-cols-2 gap-6 text-sm mt-4 text-gray-300">
+              <div>
+                <p>Casting Location: {activeProject.castingLocation}</p>
+                <p>Casting Dates: {castingRange}</p>
               </div>
-              <div className="mt-4 items-center">
-                <span>📍</span>
-                <span>Shooting: {activeProject.shootingLocation}</span>
-              <br />
-                <span>📅</span>
-                <span>Shooting: {activeProject.shootingDate}</span>
-              
+              <div>
+                <p>Shooting Location: {activeProject.castingLocation}</p>
+                <p>Shooting Dates: {shootingRange}</p>
               </div>
             </div>
           </div>
         </div>
 
-        {/* About the project */}
+        {/* About */}
         <div className="mt-6">
           <h3 className="text-lg font-semibold text-gray-800">About the project</h3>
           <p className="mt-2 text-gray-700 text-sm leading-relaxed">
-            {activeProject.about}
+            {activeProject.description}
           </p>
         </div>
 
-        {/* Role needed */}
+        {/* Role */}
         <div className="mt-6">
           <h3 className="text-lg font-semibold text-gray-800">Role needed</h3>
           <p className="mt-2 text-gray-700 text-sm">{activeProject.role}</p>
+        </div>
+
+        {/* PDF Link */}
+        <div className="my-6">
+          <span>For more detailed information about this project, </span>
+          <a
+            href=""
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-2 px-2 py-2 text-sm rounded-md text-red-600 hover:underline"
+          >
+            <svg
+              stroke="currentColor"
+              fill="currentColor"
+              strokeWidth="0"
+              viewBox="0 0 512 512"
+              className="text-xs"
+              height="1em"
+              width="1em"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path d="M216 0h80c13.3 0 24 10.7 24 24v168h87.7c17.8 0 26.7 21.5 14.1 34.1L269.7 378.3c-7.5 7.5-19.8 7.5-27.3 0L90.1 226.1c-12.6-12.6-3.7-34.1 14.1-34.1H192V24c0-13.3 10.7-24 24-24zm296 376v112c0 13.3-10.7 24-24 24H24c-13.3 0-24-10.7-24-24V376c0-13.3 10.7-24 24-24h146.7l49 49c20.1 20.1 52.5 20.1 72.6 0l49-49H488c13.3 0 24 10.7 24 24zm-124 88c0-11-9-20-20-20s-20 9-20 20 9 20 20 20 20-9 20-20zm64 0c0-11-9-20-20-20s-20 9-20 20 9 20 20 20 20-9 20-20z" />
+            </svg>
+            <span>Click here to download the PDF</span>
+          </a>
         </div>
       </div>
     </div>

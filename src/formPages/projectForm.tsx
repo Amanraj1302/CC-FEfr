@@ -2,6 +2,8 @@ import React from 'react';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import { UploadBanner } from '../constants/uploadPdf';
 import { projectValidationSchema } from '../Schemas/projectSchema';
+import { toast } from 'react-toastify';
+import { Navigate, useNavigate } from 'react-router-dom';
 //import { useAuth } from '../context/AuthContext';
 
 const initialValues = {
@@ -47,6 +49,7 @@ const fieldConfig = [
 
 export const ProjectForm: React.FC = () => {
   //const { userEmail } = useAuth();
+  const navigate = useNavigate()  ;
  const handleSubmit = async (values: any, { resetForm }: any) => {
   try {
     const formData = new FormData();
@@ -69,16 +72,17 @@ export const ProjectForm: React.FC = () => {
     const data = await response.json();
 
     if (response.ok) {
-      alert("Project created successfully");
+      toast.success("Project created successfully");
       console.log(data);
       resetForm();
+      navigate("/home")
     } else {
-      alert(data.error || "Something went wrong");
+      toast.error(data.error || "Something went wrong");
       console.error(data);
     }
   } catch (error) {
     console.error("Error:", error);
-    alert("An error occurred while submitting the form.");
+    toast.error("An error occurred while submitting the form.");
   }
 };
 

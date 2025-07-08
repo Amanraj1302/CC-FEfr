@@ -6,10 +6,22 @@ interface Project {
   projectName: string;
   typeOfProject: string;
   castingLocation: string;
-  shootingLocation: string;
+  shootingStart: string; 
+  shootingEnd: string; 
+  shootingLocation: string;  
+  castingStart: string;
+  castingEnd: string; 
   role: string;
   banner: string | null;
 }
+
+const formatDate = (dateString: string) => {
+  const date = new Date(dateString);
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  const year = date.getFullYear();
+  return `${month}/${day}/${year}`;
+};
 
 const CastingCard = ({
   project,
@@ -18,6 +30,8 @@ const CastingCard = ({
 }) => {
   const navigate = useNavigate();
 
+  const shootingRange = `${formatDate(project.shootingStart)} - ${formatDate(project.shootingEnd)}`;
+  //const castingRange = `${formatDate(project.castingStart)} - ${formatDate(project.castingEnd)}`;  
   return (
     <div className="bg-white border rounded-lg shadow p-4 max-w-md">
       <h3 className="text-lg font-semibold">{project.projectName}</h3>
@@ -34,7 +48,7 @@ const CastingCard = ({
           <span>📍</span> <span>Casting: {project.castingLocation}</span>
         </div>
         <div className="flex items-center gap-2">
-          <span>🎬</span> <span>Shooting: {project.shootingLocation}</span>
+          <span>🎬</span> <span>Shooting: {shootingRange}</span>
         </div>
       </div>
 
