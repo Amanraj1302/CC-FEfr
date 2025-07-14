@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { useLocation } from "react-router-dom";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
+
 interface Project {
   _id: string;
   projectName: string;
@@ -10,7 +10,8 @@ interface Project {
   castingEnd: string;
   shootingStart: string;
   shootingEnd: string;
-  banner: string | null;
+  bannerImageUrl: string | null;
+  bannerPdfUrl: string | null;
   description: string;
   role: string;
 }
@@ -31,6 +32,40 @@ export const ProjectPage: React.FC = () => {
 
   const [projects, setProjects] = useState<Project[]>(stateProjects || []);
   const [activeIndex, setActiveIndex] = useState<number>(0);
+  const [menuOpen, setMenuOpen] = useState<number | null>(null);
+
+  const handleEdit = (projectId: string) => {
+    console.log("Edit", projectId);
+    navigate("/projectForm?mode=edit&_id=" + projectId);
+
+    setMenuOpen(null);
+  };
+
+ const handleDelete = async (projectId: string) => {
+  if (!window.confirm("Are you sure you want to delete this project?")) return;
+
+  try {
+    const res = await fetch(`http://localhost:5000/api/project/${projectId}`, {
+      method: "DELETE",
+      credentials: "include",
+    });
+
+    const data = await res.json();
+
+    if (res.ok) {
+      setProjects((prev) => prev.filter((p) => p._id !== projectId));
+      setActiveIndex(0);
+      alert("Project deleted successfully");
+    } else {
+      alert(data.message || "Failed to delete project");
+    }
+  } catch (err) {
+    console.error(err);
+    alert("Error deleting project");
+  }
+
+  setMenuOpen(null);
+};
 
   const activeProject = projects[activeIndex];
 
@@ -74,42 +109,76 @@ export const ProjectPage: React.FC = () => {
           {projects.map((project, index) => (
             <div
               key={project._id}
-              onClick={() => setActiveIndex(index)}
-              className={`p-3 rounded-md cursor-pointer flex gap-4 items-center ${
-                activeIndex === index
+              className={`p-3 rounded-md cursor-pointer flex gap-4 items-center justify-between relative ${activeIndex === index
                   ? "bg-red-400 text-white"
                   : "bg-transparent text-black hover:bg-gray-100"
-              }`}
+                }`}
             >
-              <img
-                src={project.banner || "https://via.placeholder.com/60"}
-                alt="Banner"
-                className="w-14 h-14 rounded-md object-cover flex-shrink-0"
-              />
-              <div>
-                <p className="font-medium">{project.projectName}</p>
-                <p
-                  className={`text-sm ${
-                    activeIndex === index ? "text-white" : "text-gray-500"
-                  }`}
+              {/* Left side: image & text */}
+              <div
+                onClick={() => setActiveIndex(index)}
+                className="flex gap-4 items-center flex-1"
+              >
+                <img
+                  src={project.bannerImageUrl || "https://via.placeholder.com/60"}
+                  alt="Banner"
+                  className="w-14 h-14 rounded-md object-cover flex-shrink-0"
+                />
+                <div>
+                  <p className="font-medium">{project.projectName}</p>
+                  <p
+                    className={`text-sm ${activeIndex === index ? "text-white" : "text-gray-500"
+                      }`}
+                  >
+                    {project.typeOfProject}
+                  </p>
+                </div>
+              </div>
+
+              {/* Right side: 3-dot menu */}
+              <div className="relative">
+                <button
+                  onClick={() => setMenuOpen(menuOpen === index ? null : index)}
+                  className="px-2 py-1 text-xl"
                 >
-                  {project.typeOfProject}
-                </p>
+                  ⋮
+                </button>
+
+                {menuOpen === index && (
+                  <div className="absolute right-0 mt-2 w-28 bg-white shadow-md rounded-md border z-10">
+                    <button
+                      onClick={() => handleEdit(project._id)}
+                      className="block w-full text-left px-4 py-2 hover:bg-gray-100 text-black"
+                    >
+                      Edit
+                    </button>
+                    <button
+                      onClick={() => handleDelete(project._id)}
+                      className="block w-full text-left px-4 py-2 hover:bg-gray-100 text-red-500"
+                    >
+                      Delete
+                    </button>
+                  </div>
+                )}
               </div>
             </div>
           ))}
         </div>
 
-        <button onClick={() => navigate('/projectForm')} className="mt-10 border border-red-600 text-red-600 px-4 py-2 rounded-md w-full">
+        <button
+          onClick={() => navigate("/projectForm")}
+          className="mt-10 border border-red-600 text-red-600 px-4 py-2 rounded-md w-full"
+        >
           + Create new project
         </button>
       </div>
+
 
       {/* Content */}
       <div className="p-6 w-full overflow-y-auto">
         <div className="bg-[#2b2b2b] text-white rounded-xl p-6 flex gap-6 items-start shadow-md">
           <img
-            src={activeProject.banner || "https://via.placeholder.com/150"}
+            src={activeProject.bannerImageUrl || "https://via.placeholder.com/150"}
             alt="Project Banner"
             className="w-full md:w-60 md:h-60 rounded-lg object-cover bg-neutral-800"
           />
@@ -166,29 +235,31 @@ export const ProjectPage: React.FC = () => {
         </div>
 
         {/* PDF Link */}
-        <div className="my-6">
-          <span>For more detailed information about this project, </span>
-          <a
-            href=""
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 px-2 py-2 text-sm rounded-md text-red-600 hover:underline"
-          >
-            <svg
-              stroke="currentColor"
-              fill="currentColor"
-              strokeWidth="0"
-              viewBox="0 0 512 512"
-              className="text-xs"
-              height="1em"
-              width="1em"
-              xmlns="http://www.w3.org/2000/svg"
+        {activeProject.bannerPdfUrl && (
+          <div className="my-6">
+            <span>For more detailed information about this project, </span>
+            <a
+              href={activeProject.bannerPdfUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 px-2 py-2 text-sm rounded-md text-red-600 hover:underline"
             >
-              <path d="M216 0h80c13.3 0 24 10.7 24 24v168h87.7c17.8 0 26.7 21.5 14.1 34.1L269.7 378.3c-7.5 7.5-19.8 7.5-27.3 0L90.1 226.1c-12.6-12.6-3.7-34.1 14.1-34.1H192V24c0-13.3 10.7-24 24-24zm296 376v112c0 13.3-10.7 24-24 24H24c-13.3 0-24-10.7-24-24V376c0-13.3 10.7-24 24-24h146.7l49 49c20.1 20.1 52.5 20.1 72.6 0l49-49H488c13.3 0 24 10.7 24 24zm-124 88c0-11-9-20-20-20s-20 9-20 20 9 20 20 20 20-9 20-20zm64 0c0-11-9-20-20-20s-20 9-20 20 9 20 20 20 20-9 20-20z" />
-            </svg>
-            <span>Click here to download the PDF</span>
-          </a>
-        </div>
+              <svg
+                stroke="currentColor"
+                fill="currentColor"
+                strokeWidth="0"
+                viewBox="0 0 512 512"
+                className="text-xs"
+                height="1em"
+                width="1em"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path d="M216 0h80c13.3 0 24 10.7 24 24v168h87.7c17.8 0 26.7 21.5 14.1 34.1L269.7 378.3c-7.5 7.5-19.8 7.5-27.3 0L90.1 226.1c-12.6-12.6-3.7-34.1 14.1-34.1H192V24c0-13.3 10.7-24 24-24zm296 376v112c0 13.3-10.7 24-24 24H24c-13.3 0-24-10.7-24-24V376c0-13.3 10.7-24 24-24h146.7l49 49c20.1 20.1 52.5 20.1 72.6 0l49-49H488c13.3 0 24 10.7 24 24zm-124 88c0-11-9-20-20-20s-20 9-20 20 9 20 20 20 20-9 20-20zm64 0c0-11-9-20-20-20s-20 9-20 20 9 20 20 20 20-9 20-20z" />
+              </svg>
+              <span>Click here to download the PDF</span>
+            </a>
+          </div>
+        )}
       </div>
     </div>
   );

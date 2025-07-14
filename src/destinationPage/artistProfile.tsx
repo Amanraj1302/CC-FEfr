@@ -91,9 +91,9 @@ export const ProfilePage: React.FC = () => {
   return (
     <div className="flex flex-col items-center pt-20 px-4 md:px-20">
       {/* Profile Header */}
-      <div className="w-full  bg-black/30 rounded-3xl shadow-xl p-6 flex flex-col md:flex-row justify-between items-center gap-6 mb-6">
-        <div className="flex flex-col md:flex-row items-center gap-4">
-          <img src={artistDp} alt={artist.fullName} className="w-32 h-32 rounded-xl object-cover" />
+      <div className="w-full h-[250px] bg-black/30 rounded-3xl shadow-xl p-6 flex flex-col md:flex-row justify-between items-center gap-6 mb-6">
+        <div className="flex flex-col md:flex-row items-center ml-4  pl-6 gap-4">
+          <img src={artistDp} alt={artist.fullName} className="  w-40 h-40 rounded-xl object-cover" />
           <div className="text-center md:text-left">
             <h2 className="text-2xl font-bold">{artist.fullName}</h2>
             {artist.talentCategory?.length && (
@@ -110,7 +110,7 @@ export const ProfilePage: React.FC = () => {
             <p className="text-sm text-gray-300 mt-1">📍 {artist.currentCity}, {artist.currentState}</p>
           </div>
         </div>
-        <div className="flex flex-col items-center gap-3">
+        <div className="flex flex-col items-center mr-4 pr-4 gap-3">
           <button
             onClick={handleCopy}
             className="bg-red-600 hover:bg-red-700 text-white text-sm px-4 py-2 rounded-md flex items-center gap-2"
@@ -245,7 +245,7 @@ export const ProfilePage: React.FC = () => {
               <div className="text-red-600 space-y-2">
                 {artist.pastProjects.map((proj, idx) => (
                   <div key={idx} className={idx ? "border-t pt-2" : ""}>
-                    <a href={proj.workLink} className="underline">{proj.projectName}</a>
+                    <a href={proj.workLink} target="_blank" rel="noopener noreferrer" className="underline">{proj.projectName}</a>
                     <p className="text-gray-700 text-xs">Role – {proj.role}</p>
                   </div>
                 ))}
@@ -257,7 +257,7 @@ export const ProfilePage: React.FC = () => {
               <h3 className="font-semibold mb-2">Monologue</h3>
               <div className="text-red-600 space-y-2">
                 {monologues.map((m, i) => (
-                  <a key={i} href={m.url} className="flex items-center gap-1 underline">
+                  <a key={i} href={m.url}target="_blank" rel="noopener noreferrer"className="flex items-center gap-1 underline">
                     Language – {m.language} <ExternalLinkIcon />
                   </a>
                 ))}

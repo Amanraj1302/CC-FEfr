@@ -17,15 +17,15 @@ const features: Feature[] = [
     icon: dd, 
   },
    {
-    title: "Create Your Profile",
+    title: "Post Projects",
     description:
-      "Actors can showcase their talents, experience, photos, and reels. Stand out with a comprehensive profile that highlights your unique abilities.",
+      "Casting directors can create detailed project listings with roles, requirements, and production details to attract the right talent.",
     icon: ee, 
   },
    {
-    title: "Create Your Profile",
+    title: "Connect & Collaborate",
     description:
-      "Actors can showcase their talents, experience, photos, and reels. Stand out with a comprehensive profile that highlights your unique abilities.",
+      "Our matching algorithm helps find the perfect fit. Message directly, schedule auditions, and bring creative visions to life.",
     icon:ff, 
   },
   

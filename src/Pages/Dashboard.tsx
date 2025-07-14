@@ -36,7 +36,7 @@ export const Dashboard: React.FC = () => {
   return (
     <>
       <AvtarImage />
-      <div className=" w-full mt-10 flex-row items-center justify-center     ">
+      <div className=" w-full mt-10 flex-row items-center justify-center ">
         <Stepper currentStep={0} />
         {showStep(+step)}
       </div>

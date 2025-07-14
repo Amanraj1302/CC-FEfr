@@ -28,12 +28,35 @@ export const projectValidationSchema = Yup.object().shape({
   ageRange: Yup.string().required("Age range is required"),
   language: Yup.string().required("Language is required"),
 
-  banner: Yup.mixed()
-    .required("Please upload a banner")
-    .test("fileSize", "File size is too large", (file) =>
-      file ? file.size <= 1024 * 1024 * 5 : true // 5MB
-    )
-    .test("fileType", "Unsupported file format", (file) =>
-      file ? ["application/pdf", "image/jpeg", "image/png"].includes(file.type) : true
-    ),
+  bannerPdf: Yup.mixed()
+    .required("Please upload a PDF banner")
+    .test("fileOrString", "Please upload a PDF banner", (value) => {
+      if (!value) return false;
+      if (typeof value === "string") return true; // existing file is fine
+      return value instanceof File;
+    })
+    .test("fileSize", "PDF file size must be ≤ 5MB", (file) => {
+      if (!file || typeof file === "string") return true;
+      return file.size <= 1024 * 1024 * 5;
+    })
+    .test("fileType", "Only PDF format is allowed", (file) => {
+      if (!file || typeof file === "string") return true;
+      return file.type === "application/pdf";
+    }),
+
+  bannerImage: Yup.mixed()
+    .required("Please upload an image banner")
+    .test("fileOrString", "Please upload an image banner", (value) => {
+      if (!value) return false;
+      if (typeof value === "string") return true;
+      return value instanceof File;
+    })
+    .test("fileSize", "Image file size must be ≤ 2MB", (file) => {
+      if (!file || typeof file === "string") return true;
+      return file.size <= 1024 * 1024 * 2;
+    })
+    .test("fileType", "Only JPG or PNG format is allowed", (file) => {
+      if (!file || typeof file === "string") return true;
+      return ["image/jpeg", "image/png", "image/webp", "image/jpg"].includes(file.type);
+    }),
 });
