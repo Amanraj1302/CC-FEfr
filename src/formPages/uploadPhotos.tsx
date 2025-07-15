@@ -38,9 +38,8 @@ const FetchUploadedPhotos: React.FC<{ mode: string | null; email: string }> = ({
           const data = await res.json();
 
           if (res.ok) {
-            (data.photos || []).forEach((photoPath: string) => {
-              const fileName = photoPath.split("/").pop()?.split(".")[0];
-              if (fileName) setFieldValue(fileName, photoPath);
+            Object.keys(data.photos || []).forEach((key: string) => {
+              if (key) setFieldValue(key, data.photos[key]);
             });
           } else {
             toast.error(data.message || "Failed to load photos");

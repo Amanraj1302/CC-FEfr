@@ -19,7 +19,14 @@ interface Artist {
   headshot?: string;
   shortBio?: string;
   skills?: string[];
-  photos?: string[];
+  photos?: {
+    headshot: String,
+    smilingHeadshot: String,
+    fullBody: String,
+    threeQuarter: String,
+    profile: String,
+    artistDp: String
+  };
   videoReel?: string;
   talentCategory?: string[];
   age?: string;
@@ -66,10 +73,14 @@ export const ProfilePage: React.FC = () => {
     navigator.clipboard.writeText(window.location.href);
   };
 
-  const photoUrls = artist.photos?.length
-    ? artist.photos.map(p => `http://localhost:5000/uploads/${p}`)
-    : [];
-  const dpPath = artist?.photos?.find((photo) => (photo.includes("/artistDp")));
+  const photoUrls =
+    artist.photos
+      ? (["headshot", "smilingHeadshot", "fullBody", "threeQuarter", "profile"] as const)
+        .map(key => artist.photos && artist.photos[key] ? `http://localhost:5000/uploads/${artist.photos[key]}` : null)
+        .filter((url): url is string => !!url)
+      : [];
+
+  const dpPath = artist?.photos?.artistDp;
   const artistDp = `http://localhost:5000/uploads/${dpPath}`;
   console.log("#####", artistDp);
 
@@ -257,7 +268,7 @@ export const ProfilePage: React.FC = () => {
               <h3 className="font-semibold mb-2">Monologue</h3>
               <div className="text-red-600 space-y-2">
                 {monologues.map((m, i) => (
-                  <a key={i} href={m.url}target="_blank" rel="noopener noreferrer"className="flex items-center gap-1 underline">
+                  <a key={i} href={m.url} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 underline">
                     Language – {m.language} <ExternalLinkIcon />
                   </a>
                 ))}
