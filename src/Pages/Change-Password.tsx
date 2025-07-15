@@ -5,7 +5,7 @@ import { validationSchema } from "../Schemas/chnagePassword";
 import { Eye, EyeOff } from "lucide-react";
 import { toast } from "react-toastify";
 
-export const ChangePassword = () => {
+export const ChangePassword: React.FC = () => {
   const navigate = useNavigate();
 
   const [showPassword, setShowPassword] = useState({

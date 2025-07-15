@@ -1,6 +1,4 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate} from 'react-router-dom'
-
 
 interface Profile {
   email: string;
@@ -11,11 +9,9 @@ interface Profile {
   img: string;
 }
 
-export const Profiles: React.FC = () => {
+export const BrowseAllProfile: React.FC = () => {
   const [profiles, setProfiles] = useState<Profile[]>([]);
-  const navigate = useNavigate();
-  
-  
+  const [searchTerm, setSearchTerm] = useState("");
 
   useEffect(() => {
     const fetchProfiles = async () => {
@@ -23,7 +19,6 @@ export const Profiles: React.FC = () => {
         const response = await fetch("http://localhost:5000/api/artist/artists");
         const data = await response.json();
         setProfiles(data);
-        console.log("-----------------",data);
       } catch (error) {
         console.error("Error fetching profiles:", error);
       }
@@ -32,16 +27,36 @@ export const Profiles: React.FC = () => {
     fetchProfiles();
   }, []);
 
+  const filteredProfiles = profiles.filter(profile =>
+    profile.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
   return (
-    <section className="px-10 py-12 bg-gray-50">
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-semibold ml-10">Featured Profiles</h1>
-        <a href="/all-profiles" className="text-red-500 hover:underline">
-          Browse All Profiles →
-        </a>
+    <div className="w-full min-h-screen bg-gray-50 px-10 py-12">
+      <div className="flex flex-col mb-6 mx-7 px-3 mt-3 ">
+        <h1 className="text-2xl font-bold mb-2">All Profiles</h1>
+        <p className="text-gray-600 mb-6">Discover talented artists and performers</p>
+
+        {/*  Search Box */}
+        <div className="w-full max-w-md mb-4">
+          <input
+            type="text"
+            placeholder="Search artists..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-red-500"
+          />
+        </div>
+
+        {/*  Count */}
+        <p className="text-sm text-gray-700">
+          Showing <span className="font-medium">{filteredProfiles.length}</span> profiles
+        </p>
       </div>
-      <div className="grid grid-cols-1 ml-10 sm:grid-cols-2 md:grid-cols-4 gap-6">
-        {profiles.map((profile, index) => (
+
+      {/* Profiles grid */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 mx-7 px-3">
+        {filteredProfiles.map((profile, index) => (
           <div key={index} className="bg-white rounded-xl shadow p-4">
             <img
               src={profile.img || "/default.jpg"}
@@ -62,13 +77,15 @@ export const Profiles: React.FC = () => {
             </div>
             <button
               className="mt-4 border border-red-500 text-red-500 px-3 py-1 rounded"
-              onClick={() => { navigate(`/app/artistProfile/${profile._id}`); }}
+              onClick={() => {
+                window.location.href = `/app/artistProfile/${profile._id}`;
+              }}
             >
               View profile
             </button>
           </div>
         ))}
       </div>
-    </section>
+    </div>
   );
 };

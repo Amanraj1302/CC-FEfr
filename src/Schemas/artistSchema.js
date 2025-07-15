@@ -1,6 +1,7 @@
 import * as Yup from "yup";
 
 export const personalSchema = Yup.object().shape({
+  
   fullName: Yup.string()
     .min(2, "Too short")
     .max(50, "Too long")

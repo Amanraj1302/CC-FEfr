@@ -4,14 +4,25 @@ import { personalSchema } from "../Schemas/artistSchema";
 import { toast } from "react-toastify";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { indianStates, languages } from "../constants/indianStates";
-import { saveFormData, getFormData } from '../utils/localStorageHelper';
+import { saveFormData, getFormData } from "../utils/localStorageHelper";
 import { useAuth } from "../context/AuthContext";
 
 type ArtistFormValues = {
-  fullName: string; email: string; whatsapp: string; calling: string;
-  shortBio: string; gender: string; language: string; homeCity: string;
-  homeState: string; currentCity: string; currentState: string;
-  instagram: string; youtube: string; twitter: string; linkedin: string;
+  fullName: string;
+  email: string;
+  whatsapp: string;
+  calling: string;
+  shortBio: string;
+  gender: string;
+  language: string;
+  homeCity: string;
+  homeState: string;
+  currentCity: string;
+  currentState: string;
+  instagram: string;
+  youtube: string;
+  twitter: string;
+  linkedin: string;
 };
 
 const fields = [
@@ -33,8 +44,8 @@ const fields = [
 ];
 
 export const Personal: React.FC = () => {
-  const {userEmail} = useAuth();
-  const email= userEmail || "";
+  const { userEmail } = useAuth();
+  const email = userEmail || "";
   const navigate = useNavigate();
   const step = useParams<{ step: string }>().step || "";
   const location = useLocation();
@@ -43,45 +54,37 @@ export const Personal: React.FC = () => {
   const mode = queryParams.get("mode");
 
   const defaultValues: ArtistFormValues = {
-    fullName: "", email: "", whatsapp: "", calling: "", shortBio: "", gender: "", language: "", homeCity: "",
-    homeState: "", currentCity: "", currentState: "", instagram: "", youtube: "", twitter: "", linkedin: ""
+    fullName: "",
+    email: "",
+    whatsapp: "",
+    calling: "",
+    shortBio: "",
+    gender: "",
+    language: "",
+    homeCity: "",
+    homeState: "",
+    currentCity: "",
+    currentState: "",
+    instagram: "",
+    youtube: "",
+    twitter: "",
+    linkedin: "",
   };
 
   const [initialValues, setInitialValues] = useState<ArtistFormValues>(defaultValues);
 
-  const extractPersonalData = (data: any): ArtistFormValues => ({
-    fullName: data.fullName || "",
-    email: data.email || "",
-    whatsapp: data.whatsapp || "",
-    calling: data.calling || "",
-    shortBio: data.shortBio || "",
-    gender: data.gender || "",
-    language: data.language || "",
-    homeCity: data.homeCity || "",
-    homeState: data.homeState || "",
-    currentCity: data.currentCity || "",
-    currentState: data.currentState || "",
-    instagram: data.instagram || "",
-    youtube: data.youtube || "",
-    twitter: data.twitter || "",
-    linkedin: data.linkedin || "",
-  });
-
-  //  Fetch profile data if in edit mode
   useEffect(() => {
     const fetchProfile = async () => {
       if (mode === "edit") {
         try {
-          const response = await fetch(`http://localhost:5000/api/artist/profile?email=${userEmail}`, {
-            credentials: "include",
-             
-          });
+          const response = await fetch(
+            `http://localhost:5000/api/artist/profile?email=${userEmail}`,
+            { credentials: "include" }
+          );
           const data = await response.json();
-          console.log("data", data);
 
           if (response.ok) {
-            const cleanedData = extractPersonalData(data);
-            setInitialValues(cleanedData);
+            setInitialValues(data);
           } else {
             toast.error(data.message || "Failed to load profile.");
           }
@@ -89,7 +92,7 @@ export const Personal: React.FC = () => {
           toast.error("Error fetching profile data.");
         }
       } else {
-        const saved = getFormData();
+        const saved = getFormData("page1");
         if (saved) {
           setInitialValues({ ...defaultValues, ...saved });
         }
@@ -97,40 +100,42 @@ export const Personal: React.FC = () => {
     };
 
     fetchProfile();
-  }, [mode]);
-
+  }, [mode, userEmail]);
 
   const formik = useFormik<ArtistFormValues>({
     enableReinitialize: true,
     initialValues,
     validationSchema: personalSchema,
     onSubmit: async (values) => {
-      const cleanedData = extractPersonalData(values);
       try {
+        
         const response = await fetch("http://localhost:5000/api/artist/profile", {
           method: mode === "edit" ? "PUT" : "POST",
           headers: { "Content-Type": "application/json" },
           credentials: "include",
-          body: JSON.stringify(cleanedData),
+          body: JSON.stringify(values),
         });
 
         const data = await response.json();
 
         if (response.ok) {
           toast.success(mode === "edit" ? "Profile updated!" : "Profile submitted!");
-          navigate(mode==="edit" ? `/app/dashboard/${+step + 1}?mode=edit` : `/app/dashboard/${+step + 1}`);
+          navigate(
+            mode === "edit"
+              ? `/app/dashboard/${+step + 1}?mode=edit`
+              : `/app/dashboard/${+step + 1}`
+          );
         } else {
           toast.error(data.message || "Submission failed.");
         }
       } catch (error) {
         toast.error("Something went wrong.");
       }
-    }
+    },
   });
 
   const handleSaveDraft = () => {
-    const cleanedData = extractPersonalData(formik.values);
-    saveFormData(cleanedData);
+    saveFormData("page1", formik.values);
     toast.success("Draft saved!");
   };
 
@@ -139,7 +144,9 @@ export const Personal: React.FC = () => {
       <form onSubmit={formik.handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {fields.map(({ id, label, type, placeholder, options }) => (
           <div key={id} className={id === "shortBio" ? "md:col-span-2" : ""}>
-            <label htmlFor={id} className="block font-medium mb-1">{label}</label>
+            <label htmlFor={id} className="block font-medium mb-1">
+              {label}
+            </label>
 
             {type === "textarea" ? (
               <textarea
@@ -162,7 +169,9 @@ export const Personal: React.FC = () => {
               >
                 <option value="">Choose</option>
                 {options.map((opt, index) => (
-                  <option key={`${opt}-${index}`} value={opt}>{opt}</option>
+                  <option key={`${opt}-${index}`} value={opt}>
+                    {opt}
+                  </option>
                 ))}
               </select>
             ) : (
@@ -178,11 +187,12 @@ export const Personal: React.FC = () => {
               />
             )}
 
-            {formik.errors[id as keyof ArtistFormValues] && formik.touched[id as keyof ArtistFormValues] && (
-              <p className="text-red-500 text-sm mt-1">
-                {formik.errors[id as keyof ArtistFormValues]}
-              </p>
-            )}
+            {formik.errors[id as keyof ArtistFormValues] &&
+              formik.touched[id as keyof ArtistFormValues] && (
+                <p className="text-red-500 text-sm mt-1">
+                  {formik.errors[id as keyof ArtistFormValues]}
+                </p>
+              )}
           </div>
         ))}
 
@@ -195,7 +205,10 @@ export const Personal: React.FC = () => {
             Save Draft
           </button>
 
-          <button type="submit" className="bg-red-600 text-white px-6 py-2 rounded hover:bg-red-700">
+          <button
+            type="submit"
+            className="bg-red-600 text-white px-6 py-2 rounded hover:bg-red-700"
+          >
             Next
           </button>
         </div>

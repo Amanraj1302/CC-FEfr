@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 
 interface Project {
@@ -10,6 +10,7 @@ interface Project {
   castingEnd: string;
   shootingStart: string;
   shootingEnd: string;
+  shootingLocation: string;
   bannerImageUrl: string | null;
   bannerPdfUrl: string | null;
   description: string;
@@ -33,6 +34,9 @@ export const ProjectPage: React.FC = () => {
   const [projects, setProjects] = useState<Project[]>(stateProjects || []);
   const [activeIndex, setActiveIndex] = useState<number>(0);
   const [menuOpen, setMenuOpen] = useState<number | null>(null);
+  const menuRef = useRef<HTMLDivElement | null>(null);
+  const [searchTerm, setSearchTerm] = useState<string>("");
+
 
   const handleEdit = (projectId: string) => {
     console.log("Edit", projectId);
@@ -41,31 +45,31 @@ export const ProjectPage: React.FC = () => {
     setMenuOpen(null);
   };
 
- const handleDelete = async (projectId: string) => {
-  if (!window.confirm("Are you sure you want to delete this project?")) return;
+  const handleDelete = async (projectId: string) => {
+    if (!window.confirm("Are you sure you want to delete this project?")) return;
 
-  try {
-    const res = await fetch(`http://localhost:5000/api/project/${projectId}`, {
-      method: "DELETE",
-      credentials: "include",
-    });
+    try {
+      const res = await fetch(`http://localhost:5000/api/project/${projectId}`, {
+        method: "DELETE",
+        credentials: "include",
+      });
 
-    const data = await res.json();
+      const data = await res.json();
 
-    if (res.ok) {
-      setProjects((prev) => prev.filter((p) => p._id !== projectId));
-      setActiveIndex(0);
-      alert("Project deleted successfully");
-    } else {
-      alert(data.message || "Failed to delete project");
+      if (res.ok) {
+        setProjects((prev) => prev.filter((p) => p._id !== projectId));
+        setActiveIndex(0);
+        alert("Project deleted successfully");
+      } else {
+        alert(data.message || "Failed to delete project");
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Error deleting project");
     }
-  } catch (err) {
-    console.error(err);
-    alert("Error deleting project");
-  }
 
-  setMenuOpen(null);
-};
+    setMenuOpen(null);
+  };
 
   const activeProject = projects[activeIndex];
 
@@ -82,6 +86,23 @@ export const ProjectPage: React.FC = () => {
     }
   }, [stateProjects]);
 
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        menuRef.current &&
+        !menuRef.current.contains(event.target as Node)
+      ) {
+        setMenuOpen(null);
+      }
+    };
+    if (menuOpen !== null) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [menuOpen]);
+
   if (!activeProject) {
     return (
       <div className="flex justify-center items-center h-screen">
@@ -96,74 +117,86 @@ export const ProjectPage: React.FC = () => {
   return (
     <div className="w-full h-full top-10 py-10 flex">
       {/* Sidebar */}
-      <div className="w-[40%] h-screen bg-white border-r px-6 ml-14 py-8 overflow-y-auto">
+      <div className="w-[40%] h-screen bg-white border-r px-6 ml-14 py-8 overflow-y-auto ">
         <h1 className="text-2xl font-bold mb-6">Projects</h1>
 
         <input
           type="text"
           placeholder="Search"
-          className="w-full px-3 py-2 mb-6 border rounded-md"
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          className="w-full px-4 py-2 mb-6 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-red-500"
+          
         />
 
-        <div className="space-y-4">
-          {projects.map((project, index) => (
-            <div
-              key={project._id}
-              className={`p-3 rounded-md cursor-pointer flex gap-4 items-center justify-between relative ${activeIndex === index
+
+        <div className="divide-y divide-gray-200">
+          {projects
+            .filter(project =>
+              project.projectName.toLowerCase().includes(searchTerm.toLowerCase())
+            )
+            .map((project, index) => (
+              <div
+                key={project._id}
+                className={`p-3 cursor-pointer flex gap-4 items-center justify-between relative ${activeIndex === index
                   ? "bg-red-400 text-white"
                   : "bg-transparent text-black hover:bg-gray-100"
-                }`}
-            >
-              {/* Left side: image & text */}
-              <div
-                onClick={() => setActiveIndex(index)}
-                className="flex gap-4 items-center flex-1"
+                  }`}
               >
-                <img
-                  src={project.bannerImageUrl || "https://via.placeholder.com/60"}
-                  alt="Banner"
-                  className="w-14 h-14 rounded-md object-cover flex-shrink-0"
-                />
-                <div>
-                  <p className="font-medium">{project.projectName}</p>
-                  <p
-                    className={`text-sm ${activeIndex === index ? "text-white" : "text-gray-500"
-                      }`}
+                {/* Left side: image & text */}
+                <div
+                  onClick={() => setActiveIndex(index)}
+                  className="flex gap-4 items-center flex-1"
+                >
+                  <img
+                    src={project.bannerImageUrl || "https://via.placeholder.com/60"}
+                    alt="Banner"
+                    className="w-14 h-14 rounded-md object-cover flex-shrink-0"
+                  />
+                  <div>
+                    <p className="font-medium">{project.projectName}</p>
+                    <p
+                      className={`text-sm ${activeIndex === index ? "text-white" : "text-gray-500"
+                        }`}
+                    >
+                      {project.typeOfProject}
+                    </p>
+                  </div>
+                </div>
+
+                {/* Right side: 3-dot menu */}
+                <div className="relative">
+                  <button
+                    onClick={() => setMenuOpen(menuOpen === index ? null : index)}
+                    className="px-2 py-1 text-xl "
                   >
-                    {project.typeOfProject}
-                  </p>
+                    ⋮
+                  </button>
+
+                  {menuOpen === index && (
+                    <div
+                      ref={menuRef}
+                      className="absolute right-0 mt-2 w-28 bg-white shadow-md rounded-md border z-10"
+                    >
+                      <button
+                        onClick={() => handleEdit(project._id)}
+                        className="block w-full text-left px-4 py-2 hover:bg-gray-100 text-black"
+                      >
+                        Edit
+                      </button>
+                      <button
+                        onClick={() => handleDelete(project._id)}
+                        className="block w-full text-left px-4 py-2 hover:bg-gray-100 text-red-500"
+                      >
+                        Delete
+                      </button>
+                    </div>
+                  )}
                 </div>
               </div>
-
-              {/* Right side: 3-dot menu */}
-              <div className="relative">
-                <button
-                  onClick={() => setMenuOpen(menuOpen === index ? null : index)}
-                  className="px-2 py-1 text-xl"
-                >
-                  ⋮
-                </button>
-
-                {menuOpen === index && (
-                  <div className="absolute right-0 mt-2 w-28 bg-white shadow-md rounded-md border z-10">
-                    <button
-                      onClick={() => handleEdit(project._id)}
-                      className="block w-full text-left px-4 py-2 hover:bg-gray-100 text-black"
-                    >
-                      Edit
-                    </button>
-                    <button
-                      onClick={() => handleDelete(project._id)}
-                      className="block w-full text-left px-4 py-2 hover:bg-gray-100 text-red-500"
-                    >
-                      Delete
-                    </button>
-                  </div>
-                )}
-              </div>
-            </div>
-          ))}
+            ))}
         </div>
+        
 
         <button
           onClick={() => navigate("/projectForm")}
@@ -176,7 +209,8 @@ export const ProjectPage: React.FC = () => {
 
       {/* Content */}
       <div className="p-6 w-full overflow-y-auto">
-        <div className="bg-[#2b2b2b] text-white rounded-xl p-6 flex gap-6 items-start shadow-md">
+        <div className="bg-[#2b2b2b] text-white  rounded-xl p-6 flex gap-6 items-start
+         shadow-md">
           <img
             src={activeProject.bannerImageUrl || "https://via.placeholder.com/150"}
             alt="Project Banner"
@@ -213,7 +247,7 @@ export const ProjectPage: React.FC = () => {
                 <p>Casting Dates: {castingRange}</p>
               </div>
               <div>
-                <p>Shooting Location: {activeProject.castingLocation}</p>
+                <p>Shooting Location: {activeProject.shootingLocation}</p>
                 <p>Shooting Dates: {shootingRange}</p>
               </div>
             </div>

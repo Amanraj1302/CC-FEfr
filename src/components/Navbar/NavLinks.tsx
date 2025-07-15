@@ -1,13 +1,40 @@
-import {useAuth} from '../../context/AuthContext'
-export const NavLinks = () => {
-    const {isLoggedIn} = useAuth();
+import { BrowserRouter, Routes, Route, NavLink } from "react-router-dom";
+import { useAuth } from "../../context/AuthContext";
+
+ export const NavLinks = () => {
+    const { isLoggedIn } = useAuth();
+
+    const linkClasses = ({ isActive }: { isActive: boolean }) =>
+        `hover:text-red-500 ${isActive ? "text-red-500" : "text-gray-600"}`;
+
     return (
-        <ul className="flex space-x-16 font-semibold text-gray-600 ml-24">
-            <li><a className="hover:text-red-500" href="/home">Home</a></li>
-            <li><a className="hover:text-red-500" href="/about">About us</a></li>
-            <li><a className="hover:text-red-500" href="/contact">Contact</a></li>
-            {isLoggedIn && 
-            <li><a className="hover:text-red-500" href="/projects">Projects</a></li>}
+        <ul className="flex space-x-16 font-semibold ml-24">
+            <li>
+                <NavLink to="/home" className={linkClasses}>
+                    Home
+                </NavLink>
+            </li>
+            <li>
+                <NavLink to="/about" className={linkClasses}>
+                    About us
+                </NavLink>
+            </li>
+            <li>
+                <NavLink to="/contact" className={linkClasses}>
+                    Contact
+                </NavLink>
+            </li>
+            {isLoggedIn && (
+                <li>
+                    <NavLink to="/projects" className={linkClasses}>
+                        Projects
+                    </NavLink>
+                </li>
+            )}
         </ul>
     );
 };
+
+ 
+
+

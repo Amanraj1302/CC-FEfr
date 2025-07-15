@@ -11,6 +11,8 @@ import { Project } from "../Pages/Project";
 import { ProjectForm } from "../formPages/projectForm";
 import { ProjectPage } from "../destinationPage/projectPage";
 import { ChangePassword } from "../Pages/Change-Password";
+import { BrowseAllProfile} from "../Pages/BrowseAllProfile";
+
 export const Routers:React.FC= () => {
   return (
     
@@ -26,6 +28,8 @@ export const Routers:React.FC= () => {
         <Route path="/projectForm" element={<ProjectForm/>}></Route>
         <Route path='/projectPage' element={<ProjectPage/>}></Route>
         <Route path='/chnage-password' element={<ChangePassword/>}></Route>
+        <Route path='/all-profiles' element={<BrowseAllProfile/>}></Route>
+        
         <Route path='/app/*' element={<ProtectedRoutes/>}></Route>
       </Routes>
     

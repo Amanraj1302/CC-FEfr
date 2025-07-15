@@ -115,7 +115,7 @@ export const Projects: React.FC = () => {
     <section className="px-10 py-12 bg-gray-50">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-semibold ml-10">Projects</h1>
-        <a href="/profiles" className="text-red-500 hover:underline">
+        <a href="/projectPage" className="text-red-500 hover:underline">
           Browse All Projects →
         </a>
       </div>

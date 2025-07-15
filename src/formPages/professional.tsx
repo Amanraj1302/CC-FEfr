@@ -59,16 +59,6 @@ export const Professional: React.FC = () => {
 
   const [initialValues, setInitialValues] = useState<ProfessionalFormValues>(defaultValues);
 
-  const extractProfessionalData = (data: any): ProfessionalFormValues => ({
-    talentCategory: data.talentCategory || "",
-    height: data.height || "",
-    age: data.age || "",
-    screenAge: data.screenAge || "",
-    videoReel: data.videoReel || "",
-    skills: data.skills || [],
-    pastProjects: data.pastProjects?.length > 0 ? data.pastProjects : [{ projectName: "", role: "", workLink: "" }],
-  });
-
   useEffect(() => {
     const fetchProfessional = async () => {
       if (mode === "edit") {
@@ -79,8 +69,7 @@ export const Professional: React.FC = () => {
 
           const data = await res.json();
           if (res.ok) {
-            const cleaned = extractProfessionalData(data);
-            setInitialValues(cleaned);
+            setInitialValues(data);
           } else {
             toast.error(data.message || "Failed to load data");
           }
@@ -88,7 +77,7 @@ export const Professional: React.FC = () => {
           toast.error("Error fetching professional info");
         }
       } else {
-        const saved = getFormData();
+        const saved = getFormData("page2");
         if (saved) {
           setInitialValues({ ...defaultValues, ...saved });
         }
@@ -99,38 +88,33 @@ export const Professional: React.FC = () => {
   }, [mode, userEmail]);
 
   const handleSubmit = async (values: ProfessionalFormValues) => {
-  const cleanedValues = {
-    ...extractProfessionalData(values),
-    pastProjects: values.pastProjects.map(({ projectName, role, workLink }) => ({
-      projectName,
-      role,
-      workLink,
-    })),
+    try {
+      const res = await fetch("http://localhost:5000/api/artist/professional", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ ...values, email: userEmail }),
+      });
+
+      const data = await res.json();
+      if (res.ok) {
+        toast.success(mode === "edit" ? "Profile updated!" : "Professional info submitted!");
+        navigate(
+          mode === "edit"
+            ? `/app/dashboard/${+step + 1}?mode=edit`
+            : `/app/dashboard/${+step + 1}`
+        );
+      } else {
+        toast.error(data.message || "Submission failed");
+      }
+    } catch (err) {
+      console.error("Submit error:", err);
+      toast.error("Something went wrong");
+    }
   };
 
-  try {
-    const res = await fetch("http://localhost:5000/api/artist/professional", {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      credentials: "include",
-      body: JSON.stringify({ ...cleanedValues, email: userEmail }),
-    });
-
-    const data = await res.json();
-    if (res.ok) {
-      toast.success(mode === "edit" ? "Profile updated!" : "Professional info submitted!");
-      navigate(mode === "edit" ? `/app/dashboard/${+step + 1}?mode=edit` : `/app/dashboard/${+step + 1}`);
-    } else {
-      toast.error(data.message || "Submission failed");
-    }
-  } catch (err) {
-    console.error("Submit error:", err);
-    toast.error("Something went wrong");
-  }
-};
-
   const handleSaveDraft = (values: ProfessionalFormValues) => {
-    saveFormData(values);
+    saveFormData("page2", values);
     toast.success("Draft saved!");
   };
 
@@ -249,7 +233,13 @@ export const Professional: React.FC = () => {
           <div className="flex justify-between mt-6">
             <button
               type="button"
-              onClick={() => navigate( mode==="edit" ? `/app/dashboard/${+step - 1}?mode=edit` : `/app/dashboard/${+step - 1}`)}
+              onClick={() =>
+                navigate(
+                  mode === "edit"
+                    ? `/app/dashboard/${+step - 1}?mode=edit`
+                    : `/app/dashboard/${+step -1}`
+                )
+              }
               className="bg-red-600 text-white px-6 py-2 rounded hover:bg-red-700"
             >
               Back

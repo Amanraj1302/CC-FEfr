@@ -24,13 +24,13 @@ const getPreviewURL = (val: any) => {
   return upload;
 };
 
-// ✅ Create a component for fetching photos
+// Fetch uploaded photos if in edit mode
 const FetchUploadedPhotos: React.FC<{ mode: string | null; email: string }> = ({ mode, email }) => {
   const { setFieldValue } = useFormikContext<any>();
 
   useEffect(() => {
     const fetchPhotos = async () => {
-      if (mode === "edit" ) {
+      if (mode === "edit") {
         try {
           const res = await fetch(`http://localhost:5000/api/artist/upload?email=${email}`, {
             credentials: "include",
@@ -39,7 +39,7 @@ const FetchUploadedPhotos: React.FC<{ mode: string | null; email: string }> = ({
 
           if (res.ok) {
             (data.photos || []).forEach((photoPath: string) => {
-              const fileName = photoPath.split('/').pop()?.split('.')[0];
+              const fileName = photoPath.split("/").pop()?.split(".")[0];
               if (fileName) setFieldValue(fileName, photoPath);
             });
           } else {
@@ -54,11 +54,11 @@ const FetchUploadedPhotos: React.FC<{ mode: string | null; email: string }> = ({
     fetchPhotos();
   }, [mode, email, setFieldValue]);
 
-  return null; // 🔥 This component only runs side effect
+  return null;
 };
 
 export const UploadPhotos: React.FC = () => {
-  const storedData = getFormData();
+  const storedData = getFormData("page3");
   const { userEmail } = useAuth();
   const navigate = useNavigate();
   const step = useParams<{ step: string }>().step || "1";
@@ -76,22 +76,30 @@ export const UploadPhotos: React.FC = () => {
   }, {} as { [key: string]: any });
 
   const handleDraftSave = (values: any) => {
-    const toSave = { ...getFormData() };
+    const toSave: Record<string, string> = {};
+    const savePromises: Promise<void>[] = [];
+
     for (const key in values) {
       const val = values[key];
       if (val instanceof File) {
-        const reader = new FileReader();
-        reader.onloadend = () => {
-          toSave[key] = reader.result;
-          saveFormData(toSave);
-        };
-        reader.readAsDataURL(val);
+        const p = new Promise<void>((resolve) => {
+          const reader = new FileReader();
+          reader.onloadend = () => {
+            toSave[key] = reader.result as string;
+            resolve();
+          };
+          reader.readAsDataURL(val);
+        });
+        savePromises.push(p);
       } else {
         toSave[key] = val;
-        saveFormData(toSave);
       }
     }
-    toast.success("Draft saved!");
+
+    Promise.all(savePromises).then(() => {
+      saveFormData("page3", toSave);
+      toast.success("Draft saved!");
+    });
   };
 
   const _handleSubmit = async (values: any) => {
@@ -113,7 +121,11 @@ export const UploadPhotos: React.FC = () => {
       const data = await res.json();
       if (res.ok) {
         toast.success("Photos submitted!");
-        navigate(mode === "edit" ? `/app/dashboard/${+step + 1}?mode=edit` : `/app/dashboard/${+step + 1}`);
+        navigate(
+          mode === "edit"
+            ? `/app/dashboard/${+step + 1}?mode=edit`
+            : `/app/dashboard/${+step + 1}`
+        );
       } else {
         toast.error(data.message || "Upload failed");
       }
@@ -131,7 +143,6 @@ export const UploadPhotos: React.FC = () => {
     >
       {({ setFieldValue, handleSubmit, values, errors, touched }) => (
         <>
-          {/* 🟢 Fetch component */}
           <FetchUploadedPhotos mode={mode} email={userEmail} />
 
           <form
@@ -171,8 +182,10 @@ export const UploadPhotos: React.FC = () => {
                           const reader = new FileReader();
                           reader.onloadend = () => {
                             const base64 = reader.result;
-                            const existing = getFormData();
-                            saveFormData({ ...existing, [id]: base64 });
+                            saveFormData("page3", {
+                              ...getFormData("page3"),
+                              [id]: base64,
+                            });
                           };
                           reader.readAsDataURL(file);
                         }
