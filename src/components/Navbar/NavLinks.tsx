@@ -26,7 +26,7 @@ import { useAuth } from "../../context/AuthContext";
             </li>
             {isLoggedIn && (
                 <li>
-                    <NavLink to="/projects" className={linkClasses}>
+                    <NavLink to="/projectPage" className={linkClasses}>
                         Projects
                     </NavLink>
                 </li>

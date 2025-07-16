@@ -1,7 +1,9 @@
+
+
 import React, { useEffect, useState, useRef } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
-
+import { Project } from "../Pages/Project";
 interface Project {
   _id: string;
   projectName: string;
@@ -85,6 +87,7 @@ export const ProjectPage: React.FC = () => {
         .then((res) => res.json())
         .then((data) => setProjects(data.projects))
         .catch(console.error);
+
     }
   }, [stateProjects]);
 
@@ -107,17 +110,15 @@ export const ProjectPage: React.FC = () => {
 
   if (!activeProject) {
     return (
-      <div className="flex justify-center items-center h-screen">
-        <p>Loading projects...</p>
-      </div>
+      <Project/>
     );
   }
 
   const shootingRange = `${formatDate(activeProject.shootingStart)} - ${formatDate(activeProject.shootingEnd)}`;
   const castingRange = `${formatDate(activeProject.castingStart)} - ${formatDate(activeProject.castingEnd)}`;
 
-  return (
-    <div className="w-full h-full top-10 py-10 flex">
+  if (projects.length) {
+    return <div className="w-full h-full top-10 py-10 flex">
       {/* Sidebar */}
       <div className="w-[40%] h-screen bg-white border-r px-6 ml-14 py-8 overflow-y-auto ">
         <h1 className="text-2xl font-bold mb-6">Projects</h1>
@@ -198,9 +199,9 @@ export const ProjectPage: React.FC = () => {
               </div>
             ))}
         </div>
-            <div>
-              
-            </div>
+        <div>
+
+        </div>
         {role === "director" && (
 
           <button
@@ -302,5 +303,8 @@ export const ProjectPage: React.FC = () => {
         )}
       </div>
     </div>
-  );
+  }
+  else {
+    return <Project />
+  }
 };

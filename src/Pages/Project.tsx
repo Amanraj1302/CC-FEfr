@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import projectPlaceholder from '../assets/project.jpg';
 import { useNavigate } from 'react-router-dom';
 
-interface Project {
+interface Projects {
   _id: string;
   projectName: string;
   typeOfProject: string;
@@ -12,7 +12,7 @@ interface Project {
 
 export const Project: React.FC = () => {
   const navigate = useNavigate();
-  const [projects, setProjects] = useState<Project[]>([]);
+  const [projects, setProjects] = useState<Projects[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {

@@ -1,6 +1,6 @@
 import React from "react";
 import { SignIn } from "../Pages/SignIn";
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { Home } from '../Pages/Home'
 import {GetOtp} from '../Pages/GetOtp'
 import { SignUp} from '../Pages/SignUp';
@@ -17,7 +17,7 @@ export const Routers:React.FC= () => {
   return (
     
       <Routes>
-        <Route path="/" element={<Home />} />
+        <Route path="/" element={<Navigate to="/home" />} />
         <Route path="/home" element={<Home />} />
         <Route path="/signIn" element={<SignIn  />} />
         <Route path="/getotp/:email" element={<GetOtp />} />
