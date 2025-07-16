@@ -2,11 +2,13 @@ import { Navigate } from "react-router-dom";
 
 export const UserDropdown = ({
   userName,
+  role,
   onEditProfile,
   onLogout,
   onChangePassword
 }: {
   userName: string;
+  role: string;
   onEditProfile: () => void;
   onLogout: () => void;
   onChangePassword: () => void;
@@ -15,7 +17,7 @@ export const UserDropdown = ({
     <div className="px-4 py-3 text-sm text-gray-700 font-medium border-b border-gray-100 break-words truncate">
       Hi, <strong className="break-all">{userName}</strong>
     </div>
-
+{role === "artist" && (
     <button
       onClick={onEditProfile}
       className="w-full px-4 py-3 flex items-center gap-2 text-sm text-gray-700 hover:bg-gray-50 rounded-lg transition"
@@ -28,6 +30,7 @@ export const UserDropdown = ({
       </svg>
       Edit Profile
     </button>
+)}
     <button
       onClick={onChangePassword}
       className="w-full px-4 py-3 flex items-center gap-2 text-sm text-gray-700 hover:bg-gray-50 rounded-lg transition"

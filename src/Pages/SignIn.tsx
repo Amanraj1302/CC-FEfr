@@ -34,7 +34,7 @@ export const SignIn: React.FC = () => {
   const navigate = useNavigate();
 
 
-  const { login, isLoggedIn } = useAuth();
+  const { login, isLoggedIn,role } = useAuth();
   const { values, handleBlur, errors, handleSubmit, touched, handleChange } = useFormik<FormValues>({
     initialValues: {
       email: "",
@@ -51,20 +51,27 @@ export const SignIn: React.FC = () => {
         const { email } = values;
         const data = await response.json();
         const artist_id = data.artist_id;
+        const role= data.role;
         console.log("data", data);
         if (!response.ok) {
           toast.error(data.error || "Login failed");
         } else {
           toast.success("Login successful");
-          login({email,userName:data.name});
+          login({email,userName:data.name,role});
           // login(email , role, artistProfileStatus , directorProfileStatus);
           action.resetForm();
-          if(!artist_id){           
-            navigate(`/app/dashboard/0`);
-          }else{
-          navigate(`/app/artistProfile/${artist_id}`);
+          if(!artist_id ){
+            
+            if(role === "artist"){   
+              navigate(`/app/dashboard/0`);         
+            }
+            else if(role === "director"){
+              navigate("/home");
+            }
+        }else{          
+         navigate(`/app/artistProfile/${artist_id}`);
         }
-        }
+      }
       } catch (error: any) {
         toast.error(error.message || "Something went wrong");
         console.error(error);

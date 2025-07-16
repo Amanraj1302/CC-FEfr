@@ -10,6 +10,7 @@ type FormValues = {
   password: string;
   confirmPassword: string;
   userName: string;
+  role: string;
 };
 
 const formFields = [
@@ -24,6 +25,13 @@ const formFields = [
     label: 'Email',
     placeholder: 'Enter your email',
     type: 'email',
+  },
+  {
+    id: 'role',
+    label: 'Select Role',
+    type: 'select',
+    placeholder: '', 
+    options: ['artist', 'director'],
   },
   {
     id: 'password',
@@ -48,6 +56,7 @@ export const SignUp: React.FC = () => {
       password: "",
       confirmPassword: "",
       userName: "",
+      role: "artist,director",
     },
 
     onSubmit: async (values, action) => {
@@ -83,26 +92,46 @@ export const SignUp: React.FC = () => {
       <div className="w-full max-w-sm bg-white p-4 rounded shadow">
         <h2 className="text-2xl font-bold text-center mb-6">Sign Up</h2>
         <form onSubmit={handleSubmit}>
-          {formFields.map(({ id, label, placeholder, type }) => (
-            <div key={id}>
-              <label htmlFor={id} className="block text-sm mb-1">{label}</label>
-              <input
-                id={id}
-                name={id}
-                type={type}
-                placeholder={placeholder}
-                value={values[id as keyof FormValues]}
-                onChange={handleChange}
-                onBlur={handleBlur}
-                className={
-                  errors[id as keyof FormValues] && touched[id as keyof FormValues]
-                    ? "input-error w-full border rounded px-3 py-2 mb-4 outline-none"
-                    : "w-full border rounded px-3 py-2 mb-4 outline-none"
-                }
-              />
-              {errors[id as keyof FormValues] && touched[id as keyof FormValues] && (
+          {formFields.map((field) => (
+            <div key={field.id}>
+              <label htmlFor={field.id} className="block text-sm mb-1">{field.label}</label>
+              {field.type === "select" && field.options ? (
+                <select
+                  id={field.id}
+                  name={field.id}
+                  value={values[field.id as keyof FormValues]}
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  className={
+                    errors[field.id as keyof FormValues] && touched[field.id as keyof FormValues]
+                      ? "input-error w-full border rounded px-3 py-2 mb-4 outline-none"
+                      : "w-full border rounded px-3 py-2 mb-4 outline-none"
+                  }
+                >
+                  <option value="">Select a role</option>
+                  {field.options.map(option => (
+                    <option key={option} value={option}>{option}</option>
+                  ))}
+                </select>
+              ) : (
+                <input
+                  id={field.id}
+                  name={field.id}
+                  type={field.type}
+                  {...(field.placeholder ? { placeholder: field.placeholder } : {})}
+                  value={values[field.id as keyof FormValues]}
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  className={
+                    errors[field.id as keyof FormValues] && touched[field.id as keyof FormValues]
+                      ? "input-error w-full border rounded px-3 py-2 mb-4 outline-none"
+                      : "w-full border rounded px-3 py-2 mb-4 outline-none"
+                  }
+                />
+              )}
+              {errors[field.id as keyof FormValues] && touched[field.id as keyof FormValues] && (
                 <p className="text-red-500 text-sm mb-2">
-                  {errors[id as keyof FormValues]}
+                  {errors[field.id as keyof FormValues]}
                 </p>
               )}
             </div>

@@ -25,7 +25,7 @@ function App() {
       const result = await response.json();
       const email = result.data.email;
       const name = result.data.userName;
-      login({ email, userName: name });
+      login({ email, userName: name, role: result.data.role });
 
     } catch (err) {
       console.log("###########", err);

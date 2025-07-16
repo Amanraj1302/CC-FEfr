@@ -11,7 +11,7 @@ export const Navbar: React.FC = () => {
   const [showDropdown, setShowDropdown] = useState(false);
   const { pathname } = useLocation();
   const navigate = useNavigate();
-  const { isLoggedIn, logout ,userName} = useAuth();
+  const { isLoggedIn, logout ,userName,role} = useAuth();
   const dropdownRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
@@ -79,6 +79,7 @@ export const Navbar: React.FC = () => {
                 {showDropdown && (
                   <UserDropdown
                     userName={userName}
+                    role={role}
                     onEditProfile={() => { setShowDropdown(false); navigate(`/app/dashboard/0?mode=edit`); }}
                     onLogout={handleLogout}
                     onChangePassword={() => { setShowDropdown(false); navigate(`/chnage-password`); }}
@@ -101,7 +102,7 @@ export const Navbar: React.FC = () => {
         {isOpen && (
           <div className="absolute top-10  left-0 w-full bg-white shadow-md flex flex-col items-center space-y-4 py-4 md:hidden">
            {isLoggedIn ?
-           (<UserDropdown userName={userName} onEditProfile={() => setShowDropdown(false)}
+           (<UserDropdown userName={userName} role={role} onEditProfile={() => setShowDropdown(false)}
             onLogout={() => { handleLogout();}} onChangePassword={() => setShowDropdown(false)} />)
            :(<><NavLinks /><AuthButtons showSignIn={true} showSignUp={true} /></>)
            }

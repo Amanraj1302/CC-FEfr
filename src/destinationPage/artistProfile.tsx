@@ -7,7 +7,7 @@ import { ClipboardCopyIcon, ExternalLinkIcon, DownloadIcon, ZoomInIcon } from "@
 import { IoVideocam } from "react-icons/io5";
 import { FaMicrophone, FaPhotoVideo, FaUserCircle } from "react-icons/fa";
 import { getYouTubeEmbedUrl } from "../constants/utubelinkcorrector";
-
+import { useAuth } from "../context/AuthContext";
 interface PastProject { projectName: string; role: string; workLink: string; }
 interface Monologue { language: string; url: string; }
 
@@ -48,6 +48,7 @@ export const ProfilePage: React.FC = () => {
   const { email } = useParams<{ email: string }>();
   const [artist, setArtist] = useState<Artist | null>(null);
   const [loading, setLoading] = useState(true);
+  const { role , userEmail} = useAuth();
   const [zoomedImage, setZoomedImage] = useState<string | null>(null);
   useEffect(() => {
     async function fetchArtist() {
@@ -231,24 +232,43 @@ export const ProfilePage: React.FC = () => {
               ["Age", artist.age],
               ["Height", artist.height],
               ["Gender", artist.gender],
-              ["Languages", (
-                Array.isArray(artist.language) && artist.language
+              [
+                "Languages",
+                Array.isArray(artist.language) && artist.language.length
                   ? artist.language.join(", ")
                   : artist.language || "N/A"
-              )],
+              ],
               ["Screen Age", artist.screenAge],
               ["Current City", artist.currentCity],
-              ["WhatsApp", artist.whatsapp],
-              ["Calling", artist.calling],
-              ["Email", artist.email],
+
+              ...(
+               artist.email=== userEmail
+                  ? [
+                    ["WhatsApp", artist.whatsapp],
+                    ["Calling", artist.calling],
+                    ["Email", artist.email]
+                  ]
+                  : role === "director"
+                    ? [
+                      ["WhatsApp", artist.whatsapp],
+                      ["Calling", artist.calling],
+                      ["Email", artist.email]
+                    ]
+                    : []
+              )
             ].map(([label, value], i) =>
               value ? (
-                <div className="flex justify-between pb-3 border-b border-gray-200" key={i}>
+                <div
+                  className="flex justify-between pb-3 border-b border-gray-200"
+                  key={i}
+                >
                   <span className="font-semibold">{label}:</span>
                   <span>{value}</span>
                 </div>
               ) : null
             )}
+
+
           </div>
           {artist.pastProjects?.length && (
             <div className="w-full bg-white rounded-xl shadow-md p-4 text-sm hover:scale-[1.01] transition">

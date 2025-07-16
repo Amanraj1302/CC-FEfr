@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useRef } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 
 interface Project {
   _id: string;
@@ -29,6 +30,7 @@ const formatDate = (dateString: string) => {
 export const ProjectPage: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
+  const { role } = useAuth();
   const stateProjects: Project[] | undefined = location.state?.projects;
 
   const [projects, setProjects] = useState<Project[]>(stateProjects || []);
@@ -126,7 +128,7 @@ export const ProjectPage: React.FC = () => {
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
           className="w-full px-4 py-2 mb-6 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-red-500"
-          
+
         />
 
 
@@ -196,14 +198,18 @@ export const ProjectPage: React.FC = () => {
               </div>
             ))}
         </div>
-        
+            <div>
+              
+            </div>
+        {role === "director" && (
 
-        <button
-          onClick={() => navigate("/projectForm")}
-          className="mt-10 border border-red-600 text-red-600 px-4 py-2 rounded-md w-full"
-        >
-          + Create new project
-        </button>
+          <button
+            onClick={() => navigate("/projectForm")}
+            className="mt-10 border bg-red-600 text-white px-4 py-2 rounded-md w-full "
+          >
+            + Create new project
+          </button>
+        )}
       </div>
 
 

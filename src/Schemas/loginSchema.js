@@ -16,6 +16,8 @@ export const formSchema = yup.object().shape({
   .string()
   .oneOf([yup.ref('password'), null], 'Passwords must match')
   .required("Required"),
+  
+  role: yup.string().required("Required"),
 });
 
 export const loginSchema = yup.object().shape({

@@ -4,7 +4,7 @@ import { projectValidationSchema } from "../Schemas/projectSchema";
 import { toast } from "react-toastify";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useDropzone } from "react-dropzone";
-
+import { indianStates, languages}from "../constants/indianStates"
 const initialValues = {
   projectName: "",
   typeOfProject: "",
@@ -37,18 +37,18 @@ const FormError = ({ name }: { name: string }) => (
 
 const fieldConfig = [
   { name: "projectName", label: "Project name", type: "text", placeholder: "Enter project name" },
-  { name: "typeOfProject", label: "Type of project", type: "select", options: ["", "film", "ad", "web-series"] },
+  { name: "typeOfProject", label: "Type of project", type: "select", options: ["", "film", "ad", "web-series","drama"] },
   { name: "description", label: "Project description", type: "textarea", placeholder: "Explain the project briefly" },
   { name: "castingCity", label: "Casting City", type: "text", placeholder: "City" },
-  { name: "castingState", label: "Casting State", type: "select", options: ["", "Delhi", "Maharashtra"] },
+  { name: "castingState", label: "Casting State", type: "select", options:["Select ", ...indianStates]}, 
   { name: "castingCountry", label: "Casting Country", type: "select", options: ["", "India", "Other"] },
   { name: "shootingCity", label: "Shooting City", type: "text", placeholder: "City" },
-  { name: "shootingState", label: "Shooting State", type: "select", options: ["", "UP", "Goa"] },
+  { name: "shootingState", label: "Shooting State", type: "select", options:["Select ", ... indianStates]},
   { name: "shootingCountry", label: "Shooting Country", type: "select", options: ["", "India", "Other"] },
   { name: "role", label: "Role", type: "text", placeholder: "Enter role" },
-  { name: "gender", label: "Gender", type: "select", options: ["", "Male", "Female"] },
+  { name: "gender", label: "Gender", type: "select", options: ["", "Male", "Female","Other"] },
   { name: "ageRange", label: "Age Range", type: "select", options: ["", "18-25", "26-40"] },
-  { name: "language", label: "Language", type: "text", placeholder: "Enter language" },
+  { name: "language", label: "Language", type: "select", options: ["Select language", ...languages] },
 ];
 
 const UploadBanner = ({
