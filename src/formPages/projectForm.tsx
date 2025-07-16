@@ -217,7 +217,7 @@ export const ProjectForm: React.FC = () => {
             : "Project created successfully"
         );
         resetForm();
-        navigate("/home");
+        navigate(-1);
       } else {
         toast.error(data.error || "Something went wrong");
         console.error(data);

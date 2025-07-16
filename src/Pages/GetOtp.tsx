@@ -65,7 +65,8 @@ export const GetOtp: React.FC = () => {
       (next as HTMLInputElement)?.focus();
     }
   };
-
+  
+ 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>, index: number) => {
     if (e.key === 'Backspace' && !formik.values.otp[index] && index > 0) {
       const prev = document.getElementById(`otp-${index - 1}`);
@@ -92,11 +93,11 @@ export const GetOtp: React.FC = () => {
         <h2 className="text-2xl font-bold mb-2">Enter OTP</h2>
         <p className="mb-4 text-center text-gray-600">
           Enter the 6-digit OTP sent to <br />
-          <span className="text-blue-600">{email}</span>
+          <span className="text-red-600">{email}</span>
         </p>
 
-        <div className="mt-4 flex justify-center text-sm text-blue-600 font-medium gap-8">
-          <button className="hover:underline">Change email</button>
+        <div className="mt-4 flex justify-center text-sm text-red-600 font-medium gap-8">
+          <button onClick={() => navigate('/signUp')} className="hover:underline">Change email</button>
           <button className="hover:underline">Resend OTP</button>
         </div>
 
@@ -112,7 +113,7 @@ export const GetOtp: React.FC = () => {
                 value={digit}
                 onChange={(e) => handleChange(e, index)}
                 onKeyDown={(e) => handleKeyDown(e, index)}
-                className="w-10 h-12 text-center border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-lg"
+                className="w-10 h-12 text-center border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 text-lg"
               />
             ))}
           </div>
@@ -126,7 +127,7 @@ export const GetOtp: React.FC = () => {
             disabled={formik.values.otp.includes('')}
             className={`w-40 py-2 rounded text-white mx-auto block ${formik.values.otp.includes('')
               ? 'bg-gray-300 cursor-not-allowed'
-              : 'bg-blue-600 hover:bg-blue-700'
+              : 'bg-red-400 hover:bg-red-600'
               }`}
           >
             Submit

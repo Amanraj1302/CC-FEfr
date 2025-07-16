@@ -23,22 +23,18 @@ const formatDate = (dateString: string) => {
   return `${month}/${day}/${year}`;
 };
 
-const CastingCard = ({
-  project,
-}: {
-  project: Project;
-}) => {
+const CastingCard = ({ project }: { project: Project }) => {
   const navigate = useNavigate();
 
   const shootingRange = `${formatDate(project.shootingStart)} - ${formatDate(project.shootingEnd)}`;
-  //const castingRange = `${formatDate(project.castingStart)} - ${formatDate(project.castingEnd)}`;  
+
   return (
     <div className="bg-white border rounded-lg shadow p-4 max-w-md">
       <h3 className="text-lg font-semibold">{project.projectName}</h3>
       <p className="text-sm text-gray-600">{project.typeOfProject}</p>
 
       <span
-        className={`inline-block mt-2 px-3 py-1 text-white text-xs rounded-full bg-green-600`}
+        className="inline-block mt-2 px-3 py-1 text-white text-xs rounded-full bg-green-600"
       >
         Casting now
       </span>
@@ -120,7 +116,7 @@ export const Projects: React.FC = () => {
         </a>
       </div>
       <div className="grid grid-cols-1 ml-10 sm:grid-cols-2 md:grid-cols-3 gap-6">
-        {projects.map((project) => (
+        {projects.slice(0, 6).map((project) => (
           <CastingCard key={project._id} project={project} />
         ))}
       </div>
