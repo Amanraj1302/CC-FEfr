@@ -15,33 +15,33 @@ export const Project: React.FC = () => {
   const [projects, setProjects] = useState<Projects[]>([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    const fetchProjects = async () => {
-      try {
-        const res = await fetch('http://localhost:5000/api/project/', {
-          credentials: 'include',
-        });
-        const data = await res.json();
-        if (res.ok) {
-          setProjects(data.projects);
-        }
-      } catch (err) {
-        console.error('Failed to fetch projects', err);
-      } finally {
-        setLoading(false);
-      }
-    };
+  // useEffect(() => {
+  //   const fetchProjects = async () => {
+  //     try {
+  //       const res = await fetch('http://localhost:5000/api/project/', {
+  //         credentials: 'include',
+  //       });
+  //       const data = await res.json();
+  //       if (res.ok) {
+  //         setProjects(data.projects);
+  //       }
+  //     } catch (err) {
+  //       console.error('Failed to fetch projects', err);
+  //     } finally {
+  //       setLoading(false);
+  //     }
+  //   };
 
-    fetchProjects();
-  }, []);
+  //   fetchProjects();
+  // }, []);
 
-  if (loading) {
-    return (
-      <div className="w-full h-screen flex items-center justify-center">
-        <p>Loading...</p>
-      </div>
-    );
-  }
+  // if (loading) {
+  //   return (
+  //     <div className="w-full h-screen flex items-center justify-center">
+  //       <p>Loading...</p>
+  //     </div>
+  //   );
+  // }
 
   if (!projects.length) {
     return (

@@ -9,7 +9,7 @@ export const formSchema = yup.object().shape({
   email: yup.string().email("Please enter a valid email").required("Required"),
   
   password: yup
-  .string().min(5).matches(password,{message:"please enter a strong password"})
+  .string().min(4).matches(password,{message:"please enter a strong password"})
   .required("Required"),
   
   confirmPassword: yup

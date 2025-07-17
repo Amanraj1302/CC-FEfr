@@ -13,6 +13,7 @@ export const BrowseAllProfile: React.FC = () => {
   const [profiles, setProfiles] = useState<Profile[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
 
+ 
   useEffect(() => {
     const fetchProfiles = async () => {
       try {
@@ -27,6 +28,7 @@ export const BrowseAllProfile: React.FC = () => {
     fetchProfiles();
   }, []);
 
+  
  const filteredProfiles = profiles.filter(profile =>
   (profile.name || "").toLowerCase().includes(searchTerm.toLowerCase())
 );

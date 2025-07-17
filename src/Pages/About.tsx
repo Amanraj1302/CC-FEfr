@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import about1 from '../assets/about/about1.jpg'
 import about2 from '../assets/about/about2.jpg'
 import about3 from '../assets/about/about3.jpg'
@@ -9,6 +9,10 @@ import about7 from '../assets/about/about7.jpg'
 import about8 from '../assets/about/about8.jpg'
 import about10 from '../assets/about/about10.jpg'
 export const About: React.FC = () => {
+    useEffect(() => {
+        window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
+    }, []); 
+
     const whoWeServeData = [
         {
             title: "Casting Directors & Producers",

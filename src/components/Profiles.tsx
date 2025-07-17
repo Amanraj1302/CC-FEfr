@@ -20,7 +20,7 @@ export const Profiles: React.FC = () => {
         const response = await fetch("http://localhost:5000/api/artist/artists");
         const data = await response.json();
         setProfiles(data);
-        console.log("-----------------", data);
+       
       } catch (error) {
         console.error("Error fetching profiles:", error);
       }

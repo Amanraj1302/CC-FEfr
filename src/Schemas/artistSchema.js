@@ -1,18 +1,19 @@
 import * as Yup from "yup";
 
 export const personalSchema = Yup.object().shape({
-  
   fullName: Yup.string()
     .min(2, "Too short")
     .max(50, "Too long")
     .required("Full name is required"),
   email: Yup.string().email("Invalid email").required("Email is required"),
   whatsapp: Yup.string()
-    .matches(/^[0-9]{10,15}$/, "Enter a valid phone number")
+    .matches(/^\d{10}$/, "Enter a valid 10-digit phone number")
     .required("WhatsApp number is required"),
+
   calling: Yup.string()
-    .matches(/^[0-9]{10,15}$/, "Enter a valid phone number")
+    .matches(/^\d{10}$/, "Enter a valid 10-digit phone number")
     .required("Calling number is required"),
+
   shortBio: Yup.string()
     .min(10, "Too short")
     .max(300, "Too long")
@@ -41,34 +42,54 @@ export const personalSchema = Yup.object().shape({
 
 export const professionalSchema = Yup.object().shape({
   talentCategory: Yup.string().required("Talent category is required"),
-  height: Yup.string().matches(/^\d{2,3}\s?(cm|in)?$/, "Enter valid height like 170 cm").required("Height is required"),
-  age: Yup.number().typeError("Age must be a number").min(1).max(100).required("Age is required"),
-  screenAge: Yup.number().typeError("Screen age must be a number").min(1).max(100).required("Screen age is required"),
-  videoReel: Yup.string().url("Enter a valid video URL").required("Video reel link is required"),
-  skills: Yup.array().of(Yup.string().min(2)).min(1, "Select at least one skill"),
+  height: Yup.string()
+    .matches(/^\d{2,3}\s?(cm|in)?$/, "Enter valid height like 170 cm")
+    .required("Height is required"),
+  age: Yup.number()
+    .typeError("Age must be a number")
+    .min(1)
+    .max(100)
+    .required("Age is required"),
+  screenAge: Yup.number()
+    .typeError("Screen age must be a number")
+    .min(1)
+    .max(100)
+    .required("Screen age is required"),
+  videoReel: Yup.string()
+    .url("Enter a valid video URL")
+    .required("Video reel link is required"),
+  skills: Yup.array()
+    .of(Yup.string().min(2))
+    .min(1, "Select at least one skill"),
   pastProjects: Yup.array().of(
     Yup.object().shape({
       projectName: Yup.string().required("Project name is required"),
       role: Yup.string().required("Role is required"),
-      workLink: Yup.string().url("Enter a valid work link").required("Work link is required"),
+      workLink: Yup.string()
+        .url("Enter a valid work link")
+        .required("Work link is required"),
     })
   ),
 });
 
-
 const FILE_SIZE = 5 * 1024 * 1024; // 5MB
-const SUPPORTED_FORMATS = ["image/jpg", "image/jpeg", "image/png", "image/webp"];
+const SUPPORTED_FORMATS = [
+  "image/jpg",
+  "image/jpeg",
+  "image/png",
+  "image/webp",
+];
 
-const isFile = value => value instanceof File;
+const isFile = (value) => value instanceof File;
 
 const fileValidation = Yup.mixed()
   .required("This field is required")
-  .test("fileSize", "File too large (max 5MB)", value => {
+  .test("fileSize", "File too large (max 5MB)", (value) => {
     if (!value) return false;
     if (typeof value === "string") return true;
     return isFile(value) ? value.size <= FILE_SIZE : false;
   })
-  .test("fileFormat", "Unsupported file format", value => {
+  .test("fileFormat", "Unsupported file format", (value) => {
     if (!value) return false;
     if (typeof value === "string") return true;
     return isFile(value) ? SUPPORTED_FORMATS.includes(value.type) : false;
@@ -77,12 +98,12 @@ const fileValidation = Yup.mixed()
 const optionalFileValidation = Yup.mixed()
   .nullable()
   .notRequired()
-  .test("fileSize", "File too large (max 5MB)", value => {
+  .test("fileSize", "File too large (max 5MB)", (value) => {
     if (!value) return true;
     if (typeof value === "string") return true;
     return isFile(value) ? value.size <= FILE_SIZE : false;
   })
-  .test("fileFormat", "Unsupported file format", value => {
+  .test("fileFormat", "Unsupported file format", (value) => {
     if (!value) return true;
     if (typeof value === "string") return true;
     return isFile(value) ? SUPPORTED_FORMATS.includes(value.type) : false;
@@ -95,8 +116,6 @@ export const uploadPhotosSchema = Yup.object().shape({
   threeQuarter: fileValidation.label("Three-Quarter Shot"),
   profile: optionalFileValidation.label("Profile Shot (Optional)"),
 });
-
-
 
 export const monologueSchema = Yup.object({
   haryanvi: Yup.string().url("Enter a valid URL").nullable(),

@@ -91,6 +91,7 @@ export const ProjectPage: React.FC = () => {
     }
   }, [stateProjects]);
 
+
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (
@@ -110,7 +111,7 @@ export const ProjectPage: React.FC = () => {
 
   if (!activeProject) {
     return (
-      <Project/>
+      <Project />
     );
   }
 
@@ -118,9 +119,9 @@ export const ProjectPage: React.FC = () => {
   const castingRange = `${formatDate(activeProject.castingStart)} - ${formatDate(activeProject.castingEnd)}`;
 
   if (projects.length) {
-    return <div className="w-full h-full top-10 py-10 flex">
+    return <div className="w-full h-full top-10 flex relative ">
       {/* Sidebar */}
-      <div className="w-[40%] h-screen bg-white border-r px-6 ml-14 py-8 overflow-y-auto ">
+      <div className="w-full md:w-[40%] min-h-screen bg-white border-r px-4 md:px-6 md:ml-14 py-8 relative mb-10">
         <h1 className="text-2xl font-bold mb-6">Projects</h1>
 
         <input
@@ -129,11 +130,10 @@ export const ProjectPage: React.FC = () => {
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
           className="w-full px-4 py-2 mb-6 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-red-500"
-
         />
 
-
-        <div className="divide-y divide-gray-200">
+        {/* Scrollable list */}
+        <div className="divide-y divide-gray-200 overflow-y-auto" style={{ maxHeight: "calc(100vh - 250px)" }}>
           {projects
             .filter(project =>
               project.projectName.toLowerCase().includes(searchTerm.toLowerCase())
@@ -142,8 +142,8 @@ export const ProjectPage: React.FC = () => {
               <div
                 key={project._id}
                 className={`p-3 cursor-pointer flex gap-4 items-center justify-between relative ${activeIndex === index
-                  ? "bg-red-400 text-white"
-                  : "bg-transparent text-black hover:bg-gray-100"
+                    ? "bg-red-400 text-white"
+                    : "bg-transparent text-black hover:bg-gray-100"
                   }`}
               >
                 {/* Left side: image & text */}
@@ -171,7 +171,7 @@ export const ProjectPage: React.FC = () => {
                 <div className="relative">
                   <button
                     onClick={() => setMenuOpen(menuOpen === index ? null : index)}
-                    className="px-2 py-1 text-xl "
+                    className="px-2 py-1 text-xl"
                   >
                     ⋮
                   </button>
@@ -199,56 +199,42 @@ export const ProjectPage: React.FC = () => {
               </div>
             ))}
         </div>
-        <div>
 
-        </div>
+        {/* Fixed bottom button */}
         {role === "director" && (
-
-          <button
-            onClick={() => navigate("/projectForm")}
-            className="mt-10 border bg-red-600 text-white px-4 py-2 rounded-md w-full "
-          >
-            + Create new project
-          </button>
+          <div className="absolute bottom-10 left-0 right-0 px-4 md:px-6">
+            <button
+              onClick={() => navigate("/projectForm")}
+              className="mt-10 border bg-red-600 text-white px-4 py-2 rounded-md w-full"
+            >
+              + Create new project
+            </button>
+          </div>
         )}
       </div>
 
-
       {/* Content */}
-      <div className="p-6 w-full overflow-y-auto">
-        <div className="bg-[#2b2b2b] text-white  rounded-xl p-6 flex gap-6 items-start
-         shadow-md">
+      <div className="p-4 md:p-6 w-full h-screen overflow-y-auto">
+        <div className="bg-[#2b2b2b] text-white rounded-xl p-4 md:p-6 flex flex-col md:flex-row items-start relative shadow-md space-y-4 md:space-y-0 md:space-x-6">
           <img
             src={activeProject.bannerImageUrl || "https://via.placeholder.com/150"}
             alt="Project Banner"
             className="w-full md:w-60 md:h-60 rounded-lg object-cover bg-neutral-800"
           />
 
-          <div className="flex-1 space-y-2">
-            <div className="flex justify-between items-start">
-              <div className="space-y-1">
-                <h2 className="text-2xl font-bold">{activeProject.projectName}</h2>
-                <div className="flex items-center gap-3">
-                  <span className="text-sm font-semibold text-gray-300">
-                    {activeProject.typeOfProject}
-                  </span>
-                  <span className="bg-green-600 text-white text-xs font-medium px-3 py-1 rounded-full">
-                    Casting now
-                  </span>
-                </div>
-              </div>
+          <div className="flex flex-col py-7 ">
+            <h2 className="text-2xl md:text-3xl font-bold">{activeProject.projectName}</h2>
 
-              <div className="flex gap-3">
-                <button className="bg-red-600 hover:bg-red-700 text-sm text-white px-4 py-1.5 rounded-md font-medium">
-                  Copy project link
-                </button>
-                <button className="bg-red-600 hover:bg-red-700 text-sm text-white px-4 py-1.5 rounded-md font-medium">
-                  Apply
-                </button>
-              </div>
+            <div className="flex flex-wrap items-center gap-2 md:gap-3">
+              <span className="text-sm font-semibold text-gray-300">
+                {activeProject.typeOfProject}
+              </span>
+              <span className="bg-green-600 text-white text-xs font-medium px-3 py-1 rounded-full">
+                Casting now
+              </span>
             </div>
 
-            <div className="grid sm:grid-cols-2 gap-6 text-sm mt-4 text-gray-300">
+            <div className="flex flex-col mt-4 md:flex-row text-sm text-gray-300 py-4 md:py-6 gap-4 md:gap-6">
               <div>
                 <p>Casting Location: {activeProject.castingLocation}</p>
                 <p>Casting Dates: {castingRange}</p>
@@ -258,6 +244,15 @@ export const ProjectPage: React.FC = () => {
                 <p>Shooting Dates: {shootingRange}</p>
               </div>
             </div>
+          </div>
+
+          <div className="absolute top-4 py-4 right-4 space-x-2">
+            <button className="bg-red-600 hover:bg-red-700 text-sm text-white px-3 md:px-4 py-1.5 rounded-md font-medium">
+              Copy link
+            </button>
+            <button className="bg-red-600 hover:bg-red-700 text-sm text-white px-3 md:px-4 py-1.5 rounded-md font-medium">
+              Apply
+            </button>
           </div>
         </div>
 
@@ -302,6 +297,7 @@ export const ProjectPage: React.FC = () => {
           </div>
         )}
       </div>
+
     </div>
   }
   else {
