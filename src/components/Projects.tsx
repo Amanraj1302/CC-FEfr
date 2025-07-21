@@ -72,7 +72,8 @@ export const Projects: React.FC = () => {
   useEffect(() => {
     const fetchProjects = async () => {
       try {
-        const res = await fetch("http://localhost:5000/api/project/projects", {
+        const BASE_URL = process.env.REACT_APP_SERVER_URL;
+        const res = await fetch(`${BASE_URL}/api/project/projects`, {
           credentials: "include",
         });
         const data = await res.json();

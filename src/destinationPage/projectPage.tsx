@@ -40,7 +40,7 @@ export const ProjectPage: React.FC = () => {
   const [menuOpen, setMenuOpen] = useState<number | null>(null);
   const menuRef = useRef<HTMLDivElement | null>(null);
   const [searchTerm, setSearchTerm] = useState<string>("");
-
+const BASE_URL = process.env.REACT_APP_SERVER_URL;
 
   const handleEdit = (projectId: string) => {
     console.log("Edit", projectId);
@@ -53,7 +53,7 @@ export const ProjectPage: React.FC = () => {
     if (!window.confirm("Are you sure you want to delete this project?")) return;
 
     try {
-      const res = await fetch(`http://localhost:5000/api/project/${projectId}`, {
+      const res = await fetch(`${BASE_URL}/api/project/${projectId}`, {
         method: "DELETE",
         credentials: "include",
       });
@@ -81,7 +81,7 @@ export const ProjectPage: React.FC = () => {
     window.scrollTo(0, 0);
 
     if (!stateProjects) {
-      fetch("http://localhost:5000/api/project/projects", {
+      fetch(`${BASE_URL}/api/project/projects`, {
         credentials: "include",
       })
         .then((res) => res.json())

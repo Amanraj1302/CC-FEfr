@@ -36,7 +36,8 @@ export const Navbar: React.FC = () => {
 
   const handleLogout = async () => {
     try {
-      const res = await fetch('http://localhost:5000/api/users/logout', {
+      const BASE_URL = process.env.REACT_APP_SERVER_URL;
+      const res = await fetch(`${BASE_URL}/api/users/logout`, {
         method: 'POST',
         credentials: 'include',
       });

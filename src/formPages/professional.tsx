@@ -46,7 +46,7 @@ export const Professional: React.FC = () => {
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
   const mode = queryParams.get("mode");
-
+const BASE_URL = process.env.REACT_APP_SERVER_URL;
   const defaultValues: ProfessionalFormValues = {
     talentCategory: "",
     height: "",
@@ -63,7 +63,7 @@ export const Professional: React.FC = () => {
     const fetchProfessional = async () => {
       if (mode === "edit") {
         try {
-          const res = await fetch(`http://localhost:5000/api/artist/professional?email=${userEmail}`, {
+          const res = await fetch(`${BASE_URL}/api/artist/professional?email=${userEmail}`, {
             credentials: "include",
           });
 
@@ -89,7 +89,7 @@ export const Professional: React.FC = () => {
 
   const handleSubmit = async (values: ProfessionalFormValues) => {
     try {
-      const res = await fetch("http://localhost:5000/api/artist/professional", {
+      const res = await fetch(`${BASE_URL}/api/artist/professional`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         credentials: "include",

@@ -5,6 +5,8 @@ import { toast } from "react-toastify";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useDropzone } from "react-dropzone";
 import { indianStates, languages}from "../constants/indianStates"
+const BASE_URL = process.env.REACT_APP_SERVER_URL;
+
 const initialValues = {
   projectName: "",
   typeOfProject: "",
@@ -82,7 +84,7 @@ const UploadBanner = ({
         setFieldValue(name, acceptedFiles[0]);
       },
     });
-
+const BASE_URL = process.env.REACT_APP_SERVER_URL;
     return (
       <div>
         <label className="block text-sm font-medium text-gray-700">{label}</label>
@@ -102,11 +104,13 @@ const UploadBanner = ({
             : <span>Drag & drop or click to upload</span>}
         </div>
 
+       
         {/* Existing file link outside dropzone */}
+        
         {typeof file === "string" && (
           <div className="mt-1">
             <a
-              href={`http://localhost:5000${file}`}
+              href={`${BASE_URL}${file}`}
               target="_blank"
               rel="noopener noreferrer"
               className="text-blue-600 underline"
@@ -149,14 +153,14 @@ export const ProjectForm: React.FC = () => {
   const [searchParams] = useSearchParams();
   const mode = searchParams.get("mode");
   const projectId = searchParams.get("_id");
-
+ const BASE_URL = process.env.REACT_APP_SERVER_URL;
   const [formInitialValues, setFormInitialValues] = useState(initialValues);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     if (mode === "edit" && projectId) {
       setLoading(true);
-      fetch(`http://localhost:5000/api/project/${projectId}`)
+      fetch(`${BASE_URL}/api/project/${projectId}`)
         .then((res) => res.json())
         .then((data) => {
           setFormInitialValues({
@@ -198,8 +202,8 @@ export const ProjectForm: React.FC = () => {
 
       const endpoint =
         mode === "edit" && projectId
-          ? `http://localhost:5000/api/project/update/${projectId}`
-          : "http://localhost:5000/api/project/create";
+          ? `${BASE_URL}/api/project/update/${projectId}`
+          : `${BASE_URL}/api/project/create`;
 
       const method = mode === "edit" ? "PUT" : "POST";
 

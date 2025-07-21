@@ -17,7 +17,8 @@ export const Profiles: React.FC = () => {
   useEffect(() => {
     const fetchProfiles = async () => {
       try {
-        const response = await fetch("http://localhost:5000/api/artist/artists");
+        const BASE_URL = process.env.REACT_APP_SERVER_URL;
+        const response = await fetch(`${BASE_URL}/api/artist/artists`);
         const data = await response.json();
         setProfiles(data);
        

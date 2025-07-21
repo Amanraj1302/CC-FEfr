@@ -5,6 +5,7 @@ import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useAuth } from '../context/AuthContext';
 import { otpSchema } from '../Schemas/loginSchema';
+ const BASE_URL = process.env.REACT_APP_SERVER_URL;
 
 const otpFields = Array.from({ length: 6 });
 
@@ -20,7 +21,7 @@ export const GetOtp: React.FC = () => {
   const verifyOtp = async (email: string, otp: string) => {
 
     try {
-      const response = await fetch('http://localhost:5000/api/users/verify-otp', {
+      const response = await fetch(`${BASE_URL}/api/users/verify-otp`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, otp }),

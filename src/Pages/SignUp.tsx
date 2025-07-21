@@ -47,6 +47,7 @@ const formFields = [
   },
 
 ] as const;
+ const BASE_URL = process.env.REACT_APP_SERVER_URL;
 
 export const SignUp: React.FC = () => {
   const navigate = useNavigate();
@@ -61,7 +62,8 @@ export const SignUp: React.FC = () => {
 
     onSubmit: async (values, action) => {
       try {
-        const response = await fetch("http://localhost:5000/api/users/register", {
+        const BASE_URL = process.env.REACT_APP_SERVER_URL;
+        const response = await fetch(`${BASE_URL}/api/users/register`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(values),

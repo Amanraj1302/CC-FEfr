@@ -4,6 +4,7 @@ import { Formik, Form, Field, ErrorMessage } from "formik";
 import { validationSchema } from "../Schemas/chnagePassword";
 import { Eye, EyeOff } from "lucide-react";
 import { toast } from "react-toastify";
+ const BASE_URL = process.env.REACT_APP_SERVER_URL;
 
 export const ChangePassword: React.FC = () => {
   const navigate = useNavigate();
@@ -23,7 +24,7 @@ export const ChangePassword: React.FC = () => {
 
  const handleSubmit = async (values: any, { resetForm }: any) => {
   try {
-    const res = await fetch("http://localhost:5000/api/users/change-password", {
+    const res = await fetch(`${BASE_URL}/api/users/change-password`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

@@ -14,7 +14,8 @@ function App() {
   const [isloading, setIsLoading] = useState(true);
   const refreshToken = async () => {
     try {
-      const response: any = await fetch("http://localhost:5000/api/users/getDetails", {
+      const BASE_URL = process.env.REACT_APP_SERVER_URL;
+      const response: any = await fetch(`${BASE_URL}/api/users/getDetails`, {
         method: "GET",
         headers: { "Content-Type": "application/json" },
         credentials: "include",

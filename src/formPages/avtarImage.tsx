@@ -9,19 +9,19 @@ export const AvtarImage: React.FC = () => {
   const { userEmail } = useAuth();
 
   const [existingDpUrl, setExistingDpUrl] = useState<string | null>(null);
-
+  const BASE_URL = process.env.REACT_APP_SERVER_URL;
   // fetch existing DP on mount
   useEffect(() => {
     const fetchDp = async () => {
       try {
         const response = await fetch(
-          `http://localhost:5000/api/artist/artistDp?email=${userEmail}`,
+          `${BASE_URL}/api/artist/artistDp?email=${userEmail}`,
           { credentials: "include" }
         );
         const data = await response.json();
 
         if (response.ok && data.dp) {
-          setExistingDpUrl(`http://localhost:5000/uploads/${data.dp}`);
+          setExistingDpUrl(`${BASE_URL}/uploads/${data.dp}`);
         }
       } catch (err) {
         console.error(err);
@@ -42,7 +42,7 @@ export const AvtarImage: React.FC = () => {
             formData.append("email", userEmail);
 
             const response = await fetch(
-              `http://localhost:5000/api/artist/artistDp?email=${userEmail}`,
+              `${BASE_URL}/api/artist/artistDp?email=${userEmail}`,
               {
                 method: "POST",
                 credentials: "include",
@@ -55,7 +55,7 @@ export const AvtarImage: React.FC = () => {
             if (response.ok) {
               toast.success("Artist profile updated!");
               // refresh DP
-              setExistingDpUrl(`http://localhost:5000/uploads/${data.dp}`);
+              setExistingDpUrl(`${BASE_URL}/uploads/${data.dp}`);
             } else {
               toast.error(data.message || "Submission failed.");
             }

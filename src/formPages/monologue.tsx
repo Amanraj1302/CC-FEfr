@@ -29,7 +29,7 @@ export const DialectVideoForm: React.FC = () => {
   const step = useParams<{ step: string }>().step || "";
   const location = useLocation();
   const mode = new URLSearchParams(location.search).get("mode");
-
+const BASE_URL = process.env.REACT_APP_SERVER_URL;
   const [initialValues, setInitialValues] = useState<DialectFormValues>(defaultValues);
 
   const extractMonologueData = (data: any): DialectFormValues => {
@@ -52,7 +52,7 @@ export const DialectVideoForm: React.FC = () => {
       if (mode === "edit") {
         try {
           const res = await fetch(
-            `http://localhost:5000/api/artist/monologue?email=${userEmail}`,
+            `${BASE_URL}/api/artist/monologue?email=${userEmail}`,
             { credentials: "include" }
           );
           const data = await res.json();
@@ -85,7 +85,7 @@ export const DialectVideoForm: React.FC = () => {
         })),
       };
 
-      const res = await fetch("http://localhost:5000/api/artist/monologue", {
+      const res = await fetch(`${BASE_URL}/api/artist/monologue`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         credentials: "include",

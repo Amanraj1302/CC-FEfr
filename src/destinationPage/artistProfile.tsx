@@ -50,11 +50,13 @@ export const ProfilePage: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const { role , userEmail} = useAuth();
   const [zoomedImage, setZoomedImage] = useState<string | null>(null);
+  const BASE_URL = process.env.REACT_APP_SERVER_URL;
   useEffect(() => {
     async function fetchArtist() {
       try {
+        
         if (!email) throw new Error("Profile ID missing");
-        const res = await fetch(`http://localhost:5000/api/artist/${email}`);
+        const res = await fetch(`${BASE_URL}/api/artist/${email}`);
         const data = await res.json();
         setArtist(data);
         console.log(data);
@@ -77,12 +79,12 @@ export const ProfilePage: React.FC = () => {
   const photoUrls =
     artist.photos
       ? (["headshot", "smilingHeadshot", "fullBody", "threeQuarter", "profile"] as const)
-        .map(key => artist.photos && artist.photos[key] ? `http://localhost:5000/uploads/${artist.photos[key]}` : null)
+        .map(key => artist.photos && artist.photos[key] ? `${BASE_URL}/uploads/${artist.photos[key]}` : null)
         .filter((url): url is string => !!url)
       : [];
 
   const dpPath = artist?.photos?.artistDp;
-  const artistDp = `http://localhost:5000/uploads/${dpPath}`;
+  const artistDp = `${BASE_URL}/uploads/${dpPath}`;
   console.log("#####", artistDp);
 
   const monologues = artist.monologues || [];

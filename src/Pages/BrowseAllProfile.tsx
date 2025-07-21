@@ -8,6 +8,7 @@ interface Profile {
   tags: string[];
   img: string;
 }
+ const BASE_URL = process.env.REACT_APP_SERVER_URL;
 
 export const BrowseAllProfile: React.FC = () => {
   const [profiles, setProfiles] = useState<Profile[]>([]);
@@ -17,7 +18,7 @@ export const BrowseAllProfile: React.FC = () => {
   useEffect(() => {
     const fetchProfiles = async () => {
       try {
-        const response = await fetch("http://localhost:5000/api/artist/artists");
+        const response = await fetch(`${BASE_URL}/api/artist/artists`);
         const data = await response.json();
         setProfiles(data);
       } catch (error) {

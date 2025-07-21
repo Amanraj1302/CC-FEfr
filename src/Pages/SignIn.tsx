@@ -28,6 +28,7 @@ const formFields = [
   },
 
 ] as const;
+ const BASE_URL = process.env.REACT_APP_SERVER_URL;
 
 export const SignIn: React.FC = () => {
 
@@ -42,7 +43,8 @@ export const SignIn: React.FC = () => {
     },
     onSubmit: async (values, action) => {
       try {
-        const response = await fetch("http://localhost:5000/api/users/login", {
+        const BASE_URL = process.env.REACT_APP_SERVER_URL;
+        const response = await fetch(`${BASE_URL}/api/users/login`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           credentials: "include",

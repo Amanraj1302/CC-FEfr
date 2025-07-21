@@ -9,6 +9,7 @@ interface Projects {
   description: string;
   banner: string;
 }
+ const BASE_URL = process.env.REACT_APP_SERVER_URL;
 
 export const Project: React.FC = () => {
   const navigate = useNavigate();
@@ -18,7 +19,7 @@ export const Project: React.FC = () => {
   // useEffect(() => {
   //   const fetchProjects = async () => {
   //     try {
-  //       const res = await fetch('http://localhost:5000/api/project/', {
+  //       const res = await fetch('${BASE_URL}/api/project/', {
   //         credentials: 'include',
   //       });
   //       const data = await res.json();

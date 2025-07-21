@@ -6,6 +6,7 @@ import upload from "../assets/upload.png";
 import { uploadPhotosSchema } from "../Schemas/artistSchema";
 import { useAuth } from "../context/AuthContext";
 import { saveFormData, getFormData } from "../utils/localStorageHelper";
+ const BASE_URL = process.env.REACT_APP_SERVER_URL;
 
 const uploadSections = [
   { id: "headshot", title: "Headshot", description: "Standard headshot", sampleImage: "/images/headshot.jpg" },
@@ -19,7 +20,7 @@ const getPreviewURL = (val: any) => {
   if (val instanceof File) return URL.createObjectURL(val);
   if (typeof val === "string") {
     if (val.startsWith("data:image")) return val;
-    return `http://localhost:5000/uploads/${val}`;
+    return `${BASE_URL}/uploads/${val}`;
   }
   return upload;
 };
@@ -32,7 +33,7 @@ const FetchUploadedPhotos: React.FC<{ mode: string | null; email: string }> = ({
     const fetchPhotos = async () => {
       if (mode === "edit") {
         try {
-          const res = await fetch(`http://localhost:5000/api/artist/upload?email=${email}`, {
+          const res = await fetch(`${BASE_URL}/api/artist/upload?email=${email}`, {
             credentials: "include",
           });
           const data = await res.json();
@@ -63,6 +64,7 @@ export const UploadPhotos: React.FC = () => {
   const step = useParams<{ step: string }>().step || "1";
   const location = useLocation();
   const mode = new URLSearchParams(location.search).get("mode");
+
 
   const initialValues = uploadSections.reduce((acc, { id }) => {
     const stored = storedData?.[id];
@@ -112,7 +114,7 @@ export const UploadPhotos: React.FC = () => {
     }
 
     try {
-      const res = await fetch(`http://localhost:5000/api/artist/upload?email=${userEmail}`, {
+      const res = await fetch(`${BASE_URL}/api/artist/upload?email=${userEmail}`, {
         method: "PUT",
         credentials: "include",
         body: formData,

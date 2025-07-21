@@ -52,7 +52,7 @@ export const Personal: React.FC = () => {
 
   const queryParams = new URLSearchParams(location.search);
   const mode = queryParams.get("mode");
-
+  const BASE_URL = process.env.REACT_APP_SERVER_URL;
   const defaultValues: ArtistFormValues = {
     fullName: "",
     email: "",
@@ -78,7 +78,7 @@ export const Personal: React.FC = () => {
       if (mode === "edit") {
         try {
           const response = await fetch(
-            `http://localhost:5000/api/artist/profile?email=${userEmail}`,
+            `${BASE_URL}/api/artist/profile?email=${userEmail}`,
             { credentials: "include" }
           );
           const data = await response.json();
@@ -109,7 +109,7 @@ export const Personal: React.FC = () => {
     onSubmit: async (values) => {
       try {
         
-        const response = await fetch("http://localhost:5000/api/artist/profile", {
+        const response = await fetch(`${BASE_URL}/api/artist/profile`, {
           method: mode === "edit" ? "PUT" : "POST",
           headers: { "Content-Type": "application/json" },
           credentials: "include",
